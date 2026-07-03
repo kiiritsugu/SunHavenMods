@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "FA7zxMC1gJs=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\fma_2\\OneDrive\\Área de Trabalho\\kiiritsugu.sunhaven.mod\\src\\UnifiedTotems\\UnifiedTotems.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\fma_2\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
+    "C:\\Users\\fma_2\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net481\\1.0.3\\microsoft.netframework.referenceassemblies.net481.1.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
