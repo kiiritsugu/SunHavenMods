@@ -1,0 +1,33 @@
+{
+	"id": 996001,
+	"type": "decoration",
+	"name": "Unified Totem",
+	"image": "unifiedtotem.png",
+	"description": "A powerfull totem",
+	"helpDescription": "Combined effect of x y z totems",
+	"useDescription": "(Left click to place)",
+	"stackSize": 999,
+	"canSell": true,
+	"canTrade": true,
+	"canTrash": true,
+	"goldSellPrice": 1000,
+	"orbsSellPrice": 0,
+	"ticketSellPrice": 0,
+	"category": 1,
+	"rarity": 2,
+	"decoration": {
+		"size": [6, 6],
+		"placeableOnTables": false,
+		"placeableOnWalls": false,
+		"placeableAsRug": false
+	},
+	"recipes": [
+		{
+			"list": "RecipeList_Farmer's Table",
+			"hours": 2,
+			"inputs": [
+				{"id": 1120, "amount": 2}
+			]
+		}
+	]
+}

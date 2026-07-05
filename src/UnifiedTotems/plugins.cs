@@ -1,64 +1,59 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+
 using BepInEx;
+using BepInEx.Logging;
+
 using HarmonyLib;
 using UnityEngine;
-using System.Collections.Generic;
+
+using PSS;
 using Wish;
+using QFSW.QC;
 
-namespace SunHavenHelloWorld
+namespace UnifiedTotems;
+
+[BepInPlugin(Plugin.PLUGIN_GUID, Plugin.PLUGIN_NAME, Plugin.PLUGIN_VERSION)]
+[BepInDependency("CustomItems", "0.2.2")]
+public class Plugin : BaseUnityPlugin
 {
-    [BepInPlugin(Plugin.PLUGIN_GUID, Plugin.PLUGIN_NAME, Plugin.PLUGIN_VERSION)]
-    public class Plugin : BaseUnityPlugin
+    private Harmony harmony = new(Plugin.PLUGIN_GUID);
+    public static ManualLogSource logger;
+
+    public const string PLUGIN_GUID = "com.yourname.sunhaven.unifiedtotems";
+    public const string PLUGIN_NAME = "Unified Totems";
+    public const string PLUGIN_VERSION = "1.0.0";
+
+    private void Awake()
     {
-        public const string PLUGIN_GUID = "com.yourname.sunhaven.unifiedtotems";
-        public const string PLUGIN_NAME = "Unified Totems";
-        public const string PLUGIN_VERSION = "1.0.0";
+        logger = Logger;
+        harmony.PatchAll();
+        Logger.LogInfo($"Plugin {PLUGIN_GUID} is active. Injecting patches...");
+    }
 
-        public const int TOTEM_ITEM_ID = 995500;
-
-        private void Awake()
+    [HarmonyPatch]
+    public static class Patches
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Database), nameof(Database.GetCacheCapacity))]
+        public static void DatabaseGetCacheCapacity(ref int __result)
         {
-            Logger.LogInfo($"Plugin {PLUGIN_GUID} is active. Injecting patches...");
-            var harmony = new Harmony(PLUGIN_GUID);
-            harmony.PatchAll();
+            __result = 999999;
         }
 
-        [HarmonyPatch(typeof(Database), "InitIdentifiers")]
-        class Database_InitIdentifiers_Patch
+        [HarmonyPatch(typeof(MainMenuController), "PlayGame", new Type[] {})]
+        public static void MainMenuControllerAwake()
         {
-            static void Postfix()
-            {
-                if (Database.items.ContainsKey(TOTEM_ITEM_ID)) return;
-
-                PlaceableItem customTotem = ScriptableObject.CreateInstance<PlaceableItem>();
-                
-                customTotem.id = TOTEM_ITEM_ID;
-                customTotem.name = "Unified_Totem_Item"; 
-                customTotem.idName = "Unified_Totem_Item";
-                
-                customTotem._name = "Unified Totem";
-                customTotem.description = "A beautiful custom totem. It doesn't seem to do anything yet.";
-                customTotem.useDescription = "Place it on your farm.";
-                
-                customTotem.rarity = Rarity.Epic;
-                customTotem.stackSize = 99;
-                customTotem.canBeSold = false;
-                customTotem.canBeTrashable = true;
-
-                if (Database.items.TryGetValue(11400, out ItemData vanillaTotem))
-                {
-                    customTotem.icon = vanillaTotem.icon; 
-                    
-                    if (vanillaTotem is PlaceableItem vanillaPlaceable)
-                    {
-                        customTotem.prefab = vanillaPlaceable.prefab; 
-                    }
-                }
-
-                Database.items.Add(TOTEM_ITEM_ID, customTotem);
-                Database.ids.Add("Unified_Totem_Item", TOTEM_ITEM_ID);
-                
-                Debug.Log($"[Unified Totems] Successfully injected Custom Totem with ID: {TOTEM_ITEM_ID}");
+            try {
+                ItemHandler.CreateTotems();
+                logger.LogInfo($"Plugin {PLUGIN_NAME} is successfully loaded.");
+                Database.Instance.ids 
+            }
+            catch (Exception err){
+                logger.LogError($"Error occurred while adding custom totem:" + err);
             }
         }
     }
 }
+

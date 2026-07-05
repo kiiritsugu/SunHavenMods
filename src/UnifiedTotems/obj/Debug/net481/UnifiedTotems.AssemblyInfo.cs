@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("My First Sun Haven Mod")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a34d1571e4f736890ae38c584bf0f3e4b15e20c0")]
 [assembly: System.Reflection.AssemblyProductAttribute("UnifiedTotems")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UnifiedTotems")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

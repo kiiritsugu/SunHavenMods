@@ -6,30 +6,83 @@
     <Version>1.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
-    <!-- Change this path if your Steam is installed elsewhere -->
+    <!-- Your corrected game path on the D drive -->
     <GamePath>D:\SteamLibrary\steamapps\common\Sun Haven</GamePath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- BepInEx Core Libraries -->
+   <ItemGroup>
     <Reference Include="BepInEx">
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="0Harmony">
       <HintPath>$(GamePath)\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
-
-    <!-- Unity Libraries -->
     <Reference Include="UnityEngine">
       <HintPath>$(GamePath)\Sun Haven_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(GamePath)\Sun Haven_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
-
-    <!-- Sun Haven Game Code -->
     <Reference Include="Assembly-CSharp">
       <HintPath>$(GamePath)\Sun Haven_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Sirenix.Serialization">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Sirenix.Serialization.dll</HintPath>
+        <Private>false</Private>
+    </Reference>
+    <Reference Include="SunHaven.Core" Publicize="true">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\SunHaven.Core.dll</HintPath>
+        <Private>false</Private>
+    </Reference>
+    <Reference Include="PSS" Publicize="true">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\PSS.Database.dll</HintPath>
+        <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\UnityEngine.UI.dll</HintPath>
+        <Private>false</Private>
+    </Reference>        
+    <Reference Include="Unity.ResourceManager">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Unity.ResourceManager.dll</HintPath>
+        <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+        <Private>false</Private>
+    </Reference>
+    <Reference Include="ZeroFormatter">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\ZeroFormatter.dll</HintPath>
+        <Private>false</Private>
+    </Reference>        
+    <Reference Include="ZeroFormatter">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\ZeroFormatter.Interfaces.dll</HintPath>
+        <Private>false</Private>
+    </Reference>        
+    <Reference Include="DOVirtual">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\DOTween.dll</HintPath>
+        <Private>false</Private>
+    </Reference>        
+    <Reference Include="Mirror">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Mirror.dll</HintPath>
+        <Private>false</Private>
+    </Reference>        
+    <Reference Include="System.Core">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\System.Core.dll</HintPath>
+        <Private>false</Private>
+    </Reference>        
+    <Reference Include="SteamWorks">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
+        <Private>false</Private>
+    </Reference>
+    <Reference Include="I2.Loc">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\I2Localization.dll</HintPath>
+        <Private>false</Private>
+    </Reference>
+    <Reference Include="QFSW.QC">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\QFSW.QC.dll</HintPath>
+        <Private>false</Private>
+    </Reference>
+
+    <Publicize Include="SunHaven.Core" />
   </ItemGroup>
 </Project>
