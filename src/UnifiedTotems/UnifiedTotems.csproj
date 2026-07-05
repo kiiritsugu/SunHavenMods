@@ -30,10 +30,23 @@
         <HintPath>$(GamePath)\Sun Haven_Data\Managed\Sirenix.Serialization.dll</HintPath>
         <Private>false</Private>
     </Reference>
+    <!--
+      Sun Haven game code keeps many useful APIs private/internal (e.g. Database.ids).
+      Mods reference the original DLLs from the install, so the C# compiler would normally
+      block those members with CS0122. Krafs.Publicizer rewrites copies of the referenced
+      assemblies at build time so we can compile against them; runtime access is handled
+      via IgnoresAccessChecksTo (see https://github.com/krafs/Publicizer).
+
+      Alternative used by some Sun Haven mod repos: pre-publicize DLLs offline with
+      `dotnet tool install -g BepInEx.AssemblyPublicizer.Cli` and reference those copies instead.
+      We use Krafs.Publicizer here so nothing extra is checked into the repo and game updates
+      only require rebuilding (no re-running a CLI on copied DLLs).
+    -->
     <Reference Include="SunHaven.Core" Publicize="true">
         <HintPath>$(GamePath)\Sun Haven_Data\Managed\SunHaven.Core.dll</HintPath>
         <Private>false</Private>
     </Reference>
+    <!-- Reference Include name is "PSS"; the assembly file is PSS.Database.dll (see Publicize below). -->
     <Reference Include="PSS" Publicize="true">
         <HintPath>$(GamePath)\Sun Haven_Data\Managed\PSS.Database.dll</HintPath>
         <Private>false</Private>
@@ -83,6 +96,25 @@
         <Private>false</Private>
     </Reference>
 
+    <!--
+      Publicize Include must match the DLL file name (without .extension), not Reference Include.
+      Without Krafs.Publicizer installed, these lines and Publicize="true" above do nothing.
+    -->
     <Publicize Include="SunHaven.Core" />
+    <Publicize Include="PSS.Database" />
   </ItemGroup>
+
+   <ItemGroup>
+     <!-- Build-only: exposes private game APIs at compile time; not bundled into the mod DLL. -->
+     <PackageReference Include="Krafs.Publicizer" Version="2.3.0">
+       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+       <PrivateAssets>all</PrivateAssets>
+     </PackageReference>
+   </ItemGroup>
+
+   <ItemGroup>
+     <None Update="data\**\*">
+       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+     </None>
+   </ItemGroup>
 </Project>

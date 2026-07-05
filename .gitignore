@@ -1,0 +1,18 @@
+# Build output (only the built DLL + data belong in BepInEx/plugins, not in git)
+**/bin/
+**/obj/
+
+# Local MSBuild overrides (e.g. personal GamePath)
+private.targets
+
+# IDE / editor
+.vs/
+.idea/
+*.user
+*.suo
+*.DotSettings.user
+
+# OS junk
+Thumbs.db
+Desktop.ini
+.DS_Store

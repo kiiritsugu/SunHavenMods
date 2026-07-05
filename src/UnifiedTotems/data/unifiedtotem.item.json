@@ -3,8 +3,8 @@
 	"type": "decoration",
 	"name": "Unified Totem",
 	"image": "unifiedtotem.png",
-	"description": "A powerfull totem",
-	"helpDescription": "Combined effect of x y z totems",
+	"description": "A powerful totem combining several vanilla totem effects.",
+	"helpDescription": "Example: Royal + seasonal totem effects in one placement.",
 	"useDescription": "(Left click to place)",
 	"stackSize": 999,
 	"canSell": true,
@@ -13,10 +13,11 @@
 	"goldSellPrice": 1000,
 	"orbsSellPrice": 0,
 	"ticketSellPrice": 0,
-	"category": 1,
+	"category": 4,
 	"rarity": 2,
 	"decoration": {
 		"size": [6, 6],
+		"functionality": "PSS.Scarecrow",
 		"placeableOnTables": false,
 		"placeableOnWalls": false,
 		"placeableAsRug": false

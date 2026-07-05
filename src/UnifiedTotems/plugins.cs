@@ -1,16 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 using BepInEx;
 using BepInEx.Logging;
 
 using HarmonyLib;
-using UnityEngine;
 
 using PSS;
 using Wish;
-using QFSW.QC;
 
 namespace UnifiedTotems;
 
@@ -29,31 +25,26 @@ public class Plugin : BaseUnityPlugin
     {
         logger = Logger;
         harmony.PatchAll();
-        Logger.LogInfo($"Plugin {PLUGIN_GUID} is active. Injecting patches...");
+        Logger.LogInfo($"Plugin {PLUGIN_GUID} is active.");
     }
 
     [HarmonyPatch]
     public static class Patches
     {
+        // CustomItems registers JSON items on MainMenuController.Start; PlayGame runs after that.
+        // Phase 1 = CustomItems adds ItemData to Database. Phase 2 = ItemHandler edits behavior.
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(Database), nameof(Database.GetCacheCapacity))]
-        public static void DatabaseGetCacheCapacity(ref int __result)
-        {
-            __result = 999999;
-        }
-
         [HarmonyPatch(typeof(MainMenuController), "PlayGame", new Type[] {})]
-        public static void MainMenuControllerAwake()
+        public static void MainMenuControllerPlayGame()
         {
-            try {
+            try
+            {
                 ItemHandler.CreateTotems();
-                logger.LogInfo($"Plugin {PLUGIN_NAME} is successfully loaded.");
-                Database.Instance.ids 
             }
-            catch (Exception err){
-                logger.LogError($"Error occurred while adding custom totem:" + err);
+            catch (Exception err)
+            {
+                logger.LogError(err);
             }
         }
     }
 }
-
