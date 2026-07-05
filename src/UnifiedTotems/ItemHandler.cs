@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using PSS;
 using Wish;
 
@@ -6,54 +7,96 @@ namespace UnifiedTotems;
 
 public static class ItemHandler
 {
-    // FIX: Must match data/unifiedtotem.item.json "id" exactly (currently 996001 there, 99601 here).
-    // CustomItems registers the JSON id; GetData with the wrong id silently finds nothing.
-    public const int UNIFIED_TOTEM_ID = 99601;
+    public const int UnifiedTotemId = 996001;
 
-    // FIX (Sprinklers pattern — https://github.com/Morthy/sunhaven-mods/tree/main/Sprinklers):
-    // Do not new Scarecrow() or copy Decoration fields via reflection. CustomItems already
-    // created the item; inside GetData, cast and mutate the existing instance:
-    //
-    //   private static void EnableUnifiedTotem(ItemData item)
-    //   {
-    //       var scarecrow = (Scarecrow)item.useItem;
-    //       scarecrow.scareCrowEffect = ScareCrowEffect.Royal;
-    //       scarecrow.range = 6;
-    //       scarecrow.cropCapacity = 3;
-    //   }
-    //
-    // Returning a new Scarecrow never registers it with the game — the returned object is unused.
-    public static Scarecrow EnableTotems(ItemData item)
+    // Example vanilla sources — verify ids in-game (/finditemid) or https://kryzik.github.io/sun-haven-items/
+    private static readonly int[] VanillaTotemSourceIds =
     {
-        Scarecrow newScarecrow = new Scarecrow();
+        1176, // Royal Totem
+        1171, // Spring Totem
+        1172, // Summer Totem
+        1173, // Fall Totem
+        1174, // Winter Totem
+    };
 
-        foreach (var field in typeof(Decoration).GetFields(
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance))
+    /// <summary>
+    /// Phase 2 (CustomItems is phase 1): read vanilla totems from Database, then configure our custom item.
+    /// </summary>
+    public static void CreateTotems()
+    {
+        UnifiedTotemState.CombinedEffects.Clear();
+        UnifiedTotemState.IsConfigured = false;
+
+        var sourceCount = VanillaTotemSourceIds.Length;
+        var loaded = 0;
+
+        foreach (var sourceId in VanillaTotemSourceIds)
         {
-            try
+            Database.GetData<ItemData>(sourceId, data =>
             {
-                field.SetValue(newScarecrow, field.GetValue(item));
-            }
-            catch (Exception)
-            {
-                // Reflection copy is fragile; prefer direct field assignment on item.useItem instead.
-            }
+                CollectFromVanillaTotem(data, sourceId);
+                if (++loaded >= sourceCount)
+                {
+                    Database.GetData<ItemData>(UnifiedTotemId, ConfigureUnifiedTotem);
+                }
+            });
         }
-
-        newScarecrow.scareCrowEffect = ScareCrowEffect.Royal;
-        newScarecrow.range = 6;
-        newScarecrow.cropCapacity = 3;
-
-        return newScarecrow;
     }
 
-    // FIX: Make void like Sprinklers.CreateSprinklerItems(). Use:
-    //   Database.GetData<ItemData>(UNIFIED_TOTEM_ID, EnableUnifiedTotem);
-    // No return value — GetData invokes the callback when the item exists in the database.
-    public static Scarecrow CreateTotems()
+    private static void CollectFromVanillaTotem(ItemData data, int sourceId)
     {
-        Scarecrow newTotem = null;
-        Database.GetData<ItemData>(UNIFIED_TOTEM_ID, data => newTotem = EnableTotems(data));
-        return newTotem;
+        if (data?.useItem is not Placeable placeable || placeable._decoration is not Scarecrow scarecrow)
+        {
+            Plugin.logger.LogWarning(
+                $"Vanilla totem {sourceId} is not a Placeable/Scarecrow — check item id or game version.");
+            return;
+        }
+
+        if (!UnifiedTotemState.CombinedEffects.Contains(scarecrow.scareCrowEffect))
+        {
+            UnifiedTotemState.CombinedEffects.Add(scarecrow.scareCrowEffect);
+        }
+
+        UnifiedTotemState.Range = Math.Max(UnifiedTotemState.Range, scarecrow.range);
+        UnifiedTotemState.CropCapacity = Math.Max(UnifiedTotemState.CropCapacity, scarecrow.cropCapacity);
+
+        Plugin.logger.LogInfo(
+            $"Collected {scarecrow.scareCrowEffect} from vanilla item {data.name} ({sourceId})");
+    }
+
+    private static void ConfigureUnifiedTotem(ItemData item)
+    {
+        if (item.useItem is not Placeable placeable)
+        {
+            Plugin.logger.LogError(
+                $"Custom item {UnifiedTotemId} has no Placeable useItem — is CustomItems loaded and JSON valid?");
+            return;
+        }
+
+        if (placeable._decoration is not Scarecrow scarecrow)
+        {
+            Plugin.logger.LogError(
+                $"Custom item {UnifiedTotemId} decoration is not Scarecrow — set " +
+                "\"functionality\": \"PSS.Scarecrow\" in unifiedtotem.item.json");
+            return;
+        }
+
+        if (UnifiedTotemState.CombinedEffects.Count == 0)
+        {
+            Plugin.logger.LogWarning(
+                "No vanilla totem effects collected — verify VanillaTotemSourceIds in ItemHandler.cs");
+        }
+
+        scarecrow.range = UnifiedTotemState.Range;
+        scarecrow.cropCapacity = UnifiedTotemState.CropCapacity;
+
+        // One enum on the placed Scarecrow; CropPatches adds the full CombinedEffects list to crops in range.
+        scarecrow.scareCrowEffect = UnifiedTotemState.CombinedEffects.FirstOrDefault();
+
+        UnifiedTotemState.IsConfigured = true;
+
+        Plugin.logger.LogInfo(
+            $"Configured Unified Totem with {UnifiedTotemState.CombinedEffects.Count} effect(s), " +
+            $"range {UnifiedTotemState.Range}, capacity {UnifiedTotemState.CropCapacity}");
     }
 }

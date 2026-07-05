@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 - Add `.gitignore` for build artifacts (`bin/`, `obj/`), IDE files, and local `private.targets`.
 - Remove tracked `bin/` and `obj/` build output (contained local Windows user paths).
 - Add inline comments in `plugins.cs` and `ItemHandler.cs` describing how to fix item setup (Sprinklers pattern), ID mismatch, and unnecessary patches.
+- Correct docs/comments: CustomItems is the Database reference for adding items; UnifiedTotems is phase 2 (edit behavior / combine totem effects).
+- Add example implementation: load vanilla totem effects via `Database.GetData`, configure custom `Scarecrow`, apply combined effects with `CropPatches`.
 
 ### Fixed
 - Add `Krafs.Publicizer` NuGet package so `<Publicize>` entries and `Publicize="true"` references actually work at compile time.

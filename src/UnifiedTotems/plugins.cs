@@ -25,38 +25,24 @@ public class Plugin : BaseUnityPlugin
     {
         logger = Logger;
         harmony.PatchAll();
-        Logger.LogInfo($"Plugin {PLUGIN_GUID} is active. Injecting patches...");
+        Logger.LogInfo($"Plugin {PLUGIN_GUID} is active.");
     }
 
     [HarmonyPatch]
     public static class Patches
     {
-        // FIX (optional — remove unless you hit cache limits): This patch was added while chasing
-        // Database.ids / CS0122 errors. Morthy's Sprinklers mod does not patch GetCacheCapacity.
-        // CustomItems + Database.GetData in ItemHandler is enough for item setup; delete this
-        // postfix if you do not have a proven need to raise the database cache size.
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(Database), nameof(Database.GetCacheCapacity))]
-        public static void DatabaseGetCacheCapacity(ref int __result)
-        {
-            __result = 999999;
-        }
-
-        // FIX: Match Sprinklers — call item setup when a save loads, after CustomItems has
-        // registered JSON items. Database.GetData (public API) runs in ItemHandler; no need for
-        // Database.ids if you mutate item.useItem in place (see ItemHandler.cs).
+        // CustomItems registers JSON items on MainMenuController.Start; PlayGame runs after that.
+        // Phase 1 = CustomItems adds ItemData to Database. Phase 2 = ItemHandler edits behavior.
         [HarmonyPostfix]
         [HarmonyPatch(typeof(MainMenuController), "PlayGame", new Type[] {})]
-        public static void MainMenuControllerAwake()
+        public static void MainMenuControllerPlayGame()
         {
             try
             {
                 ItemHandler.CreateTotems();
-                logger.LogInfo($"Plugin {PLUGIN_NAME} is successfully loaded.");
             }
             catch (Exception err)
             {
-                // FIX: Pass the exception object so the stack trace is logged (Sprinklers: logger.LogError(e)).
                 logger.LogError(err);
             }
         }

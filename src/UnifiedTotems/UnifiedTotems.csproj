@@ -106,8 +106,15 @@
 
    <ItemGroup>
      <!-- Build-only: exposes private game APIs at compile time; not bundled into the mod DLL. -->
-     <PackageReference Include="Krafs.Publicizer" Version="2.3.0">       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+     <PackageReference Include="Krafs.Publicizer" Version="2.3.0">
+       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
        <PrivateAssets>all</PrivateAssets>
      </PackageReference>
+   </ItemGroup>
+
+   <ItemGroup>
+     <None Update="data\**\*">
+       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+     </None>
    </ItemGroup>
 </Project>
