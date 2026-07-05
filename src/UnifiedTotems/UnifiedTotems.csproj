@@ -7,7 +7,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <!-- Your corrected game path on the D drive -->
-    <GamePath>D:\SteamLibrary\steamapps\common\Sun Haven</GamePath>
+    <GamePath>C:\Program Files (x86)\Steam\steamapps\common\Sun Haven</GamePath>
   </PropertyGroup>
 
    <ItemGroup>

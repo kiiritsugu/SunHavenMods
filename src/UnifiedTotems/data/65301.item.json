@@ -1,8 +1,7 @@
 {
-	"id": 996001,
+	"id": 65301,
 	"type": "decoration",
 	"name": "Unified Totem",
-	"image": "unifiedtotem.png",
 	"description": "A powerful totem combining several vanilla totem effects.",
 	"helpDescription": "Example: Royal + seasonal totem effects in one placement.",
 	"useDescription": "(Left click to place)",
@@ -13,11 +12,10 @@
 	"goldSellPrice": 1000,
 	"orbsSellPrice": 0,
 	"ticketSellPrice": 0,
-	"category": 4,
+	"category": 2,
 	"rarity": 2,
 	"decoration": {
 		"size": [6, 6],
-		"functionality": "PSS.Scarecrow",
 		"placeableOnTables": false,
 		"placeableOnWalls": false,
 		"placeableAsRug": false

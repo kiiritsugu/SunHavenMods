@@ -47,7 +47,7 @@ public static class CropPatches
 
     private static bool IsCropNearUnifiedTotem(Crop crop)
     {
-        var world = SingletonBehaviour.Instance?.CurrentWorld;
+        var world = SingletonBehaviour<GameSave>.Instance.CurrentWorld;
         if (world?.Decorations == null)
         {
             return false;

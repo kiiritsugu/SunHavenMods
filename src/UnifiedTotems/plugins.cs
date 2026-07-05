@@ -17,9 +17,9 @@ public class Plugin : BaseUnityPlugin
     private Harmony harmony = new(Plugin.PLUGIN_GUID);
     public static ManualLogSource logger;
 
-    public const string PLUGIN_GUID = "com.yourname.sunhaven.unifiedtotems";
+    public const string PLUGIN_GUID = "com.kiiritsugu.sunhaven.unifiedtotems";
     public const string PLUGIN_NAME = "Unified Totems";
-    public const string PLUGIN_VERSION = "1.0.0";
+    public const string PLUGIN_VERSION = "0.1.1";
 
     private void Awake()
     {
