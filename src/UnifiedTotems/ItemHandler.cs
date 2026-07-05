@@ -1,36 +1,42 @@
 ﻿using System;
-using System.Reflection;
 using PSS;
-using UnityEngine;
 using Wish;
 
 namespace UnifiedTotems;
-using BepInEx.Logging;
-
 
 public static class ItemHandler
-{      
-    public static ManualLogSource logger;  
+{
+    // FIX: Must match data/unifiedtotem.item.json "id" exactly (currently 996001 there, 99601 here).
+    // CustomItems registers the JSON id; GetData with the wrong id silently finds nothing.
     public const int UNIFIED_TOTEM_ID = 99601;
 
+    // FIX (Sprinklers pattern — https://github.com/Morthy/sunhaven-mods/tree/main/Sprinklers):
+    // Do not new Scarecrow() or copy Decoration fields via reflection. CustomItems already
+    // created the item; inside GetData, cast and mutate the existing instance:
+    //
+    //   private static void EnableUnifiedTotem(ItemData item)
+    //   {
+    //       var scarecrow = (Scarecrow)item.useItem;
+    //       scarecrow.scareCrowEffect = ScareCrowEffect.Royal;
+    //       scarecrow.range = 6;
+    //       scarecrow.cropCapacity = 3;
+    //   }
+    //
+    // Returning a new Scarecrow never registers it with the game — the returned object is unused.
     public static Scarecrow EnableTotems(ItemData item)
     {
-        logger.LogInfo($"Enabling Unified Totems for item {item.name} ({item.id})");
-
         Scarecrow newScarecrow = new Scarecrow();
 
-        FieldInfo[] fields = typeof(Decoration).GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-
-        foreach (FieldInfo field in fields)
+        foreach (var field in typeof(Decoration).GetFields(
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance))
         {
             try
             {
-                object value = field.GetValue(item);
-                field.SetValue(newScarecrow, value);
+                field.SetValue(newScarecrow, field.GetValue(item));
             }
-            catch (Exception err)
+            catch (Exception)
             {
-                logger.LogError($"Error occurred while enabling totem for field {field.Name}: " + err);
+                // Reflection copy is fragile; prefer direct field assignment on item.useItem instead.
             }
         }
 
@@ -41,6 +47,9 @@ public static class ItemHandler
         return newScarecrow;
     }
 
+    // FIX: Make void like Sprinklers.CreateSprinklerItems(). Use:
+    //   Database.GetData<ItemData>(UNIFIED_TOTEM_ID, EnableUnifiedTotem);
+    // No return value — GetData invokes the callback when the item exists in the database.
     public static Scarecrow CreateTotems()
     {
         Scarecrow newTotem = null;

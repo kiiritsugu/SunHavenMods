@@ -1,16 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 using BepInEx;
 using BepInEx.Logging;
 
 using HarmonyLib;
-using UnityEngine;
 
 using PSS;
 using Wish;
-using QFSW.QC;
 
 namespace UnifiedTotems;
 
@@ -35,6 +31,10 @@ public class Plugin : BaseUnityPlugin
     [HarmonyPatch]
     public static class Patches
     {
+        // FIX (optional — remove unless you hit cache limits): This patch was added while chasing
+        // Database.ids / CS0122 errors. Morthy's Sprinklers mod does not patch GetCacheCapacity.
+        // CustomItems + Database.GetData in ItemHandler is enough for item setup; delete this
+        // postfix if you do not have a proven need to raise the database cache size.
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Database), nameof(Database.GetCacheCapacity))]
         public static void DatabaseGetCacheCapacity(ref int __result)
@@ -42,18 +42,23 @@ public class Plugin : BaseUnityPlugin
             __result = 999999;
         }
 
+        // FIX: Match Sprinklers — call item setup when a save loads, after CustomItems has
+        // registered JSON items. Database.GetData (public API) runs in ItemHandler; no need for
+        // Database.ids if you mutate item.useItem in place (see ItemHandler.cs).
+        [HarmonyPostfix]
         [HarmonyPatch(typeof(MainMenuController), "PlayGame", new Type[] {})]
         public static void MainMenuControllerAwake()
         {
-            try {
+            try
+            {
                 ItemHandler.CreateTotems();
                 logger.LogInfo($"Plugin {PLUGIN_NAME} is successfully loaded.");
-                Database.Instance.ids 
             }
-            catch (Exception err){
-                logger.LogError($"Error occurred while adding custom totem:" + err);
+            catch (Exception err)
+            {
+                // FIX: Pass the exception object so the stack trace is logged (Sprinklers: logger.LogError(e)).
+                logger.LogError(err);
             }
         }
     }
 }
-
