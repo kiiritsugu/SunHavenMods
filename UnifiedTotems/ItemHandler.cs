@@ -38,22 +38,16 @@ public static class ItemHandler
         });
 
         // Convert decoration to scarecrow and check if the conversion was successful.
-        Database.GetData<ItemData>(UnifiedTotemId, ConvertIntoScarecrow);
-        Scarecrow newScarecrow = CheckIfScarecrow();
+        Database.GetData<ItemData>(UnifiedTotemId, ConfigureAsScarecrow);
 
-        // Configure the unified totem with the collected values.
-        if (newScarecrow != null)
-        {
-            ConfigureUnifiedTotem(newScarecrow);
-        }
 
         // Health check: log the final configuration of the unified totem.
         DebugCheckTotemInDatabase();
     }
 
-    private static void ConvertIntoScarecrow(ItemData data)
+    private static void ConfigureAsScarecrow(ItemData data)
     {
-        Plugin.logger.LogInfo($"UnifiedTotems: Converting custom item {UnifiedTotemId} into a Scarecrow decoration.");
+        Plugin.logger.LogInfo($"UnifiedTotems: Configuring custom item {UnifiedTotemId} as a Scarecrow decoration.");
 
         if( data == null)
         {
@@ -76,15 +70,27 @@ public static class ItemHandler
             return;
         }
 
+        //Add the scarecrow range preview from vanilla totem
+        RangePreviewer.CreateRangePreview(data, UnifiedTotemState.Range);
+
+        // Convert the decoration to a Scarecrow component, copying over all relevant fields and properties.
         Decoration baseDecoration = placeable._decoration;
         Scarecrow newScarecrow = baseDecoration.gameObject.AddComponent<Scarecrow>();
 
         CopyBaseToDerived(baseDecoration, newScarecrow);
         UnityEngine.Object.DestroyImmediate(baseDecoration, true);
+
+        // Configure the new Scarecrow with the collected effects, range, and capacity, before replacing the original decoration.
+        newScarecrow.scareCrowEffect = ScareCrowEffect.Royal;
+        newScarecrow.range = UnifiedTotemState.Range;
+        newScarecrow.cropCapacity = UnifiedTotemState.CropCapacity;
         
         placeable._decoration = newScarecrow;
+
+        UnifiedTotemState.IsConfigured = true;
     }
 
+    //Collects scarecrow data from vanilla totems and saves it to UnifiedTotemState
     private static void CollectFromVanillaTotem(ItemData data, int sourceId)
     {
         if (data?.useItem is not Placeable placeable || placeable._decoration is not Scarecrow scarecrow)
@@ -105,58 +111,8 @@ public static class ItemHandler
         UnifiedTotemState.Range = Math.Max(UnifiedTotemState.Range, scarecrow.range);
         UnifiedTotemState.CropCapacity = Math.Max(UnifiedTotemState.CropCapacity, scarecrow.cropCapacity);
 
-        UnifiedTotemState.secondaryPreviewSprite = placeable._secondaryPreviewSprite;
-        UnifiedTotemState.previewOffset = placeable.previewOffset;
-
         Plugin.logger.LogInfo(
             $"Collected {scarecrow.scareCrowEffect} from vanilla item {data.name} ({sourceId})");
-    }
-
-    // Collects the configs from a vanilla totem and applies them to the unified totem. This is called after the unified totem has been converted into a Scarecrow decoration.
-    private static void ConfigureUnifiedTotem(Scarecrow newScarecrow)
-    {
-        // if (UnifiedTotemState.CombinedEffects.Count == 0)
-        // {
-        //     Plugin.logger.LogWarning(
-        //         "No vanilla totem effects collected — verify VanillaTotemSourceIds in ItemHandler.cs");
-        // }
-
-        // For now, just set to Royal for testing. Modify this to add a list of effects later;
-        newScarecrow.scareCrowEffect = ScareCrowEffect.Royal;
-
-        newScarecrow.range = UnifiedTotemState.Range;
-        newScarecrow.cropCapacity = UnifiedTotemState.CropCapacity;
-
-        // One enum on the placed Scarecrow; CropPatches adds the full CombinedEffects list to crops in range.
-        //newScarecrow.scareCrowEffect = UnifiedTotemState.CombinedEffects.FirstOrDefault();
-
-        UnifiedTotemState.IsConfigured = true;
-
-        Plugin.logger.LogInfo(
-            $"Configured Unified Totem with {newScarecrow.scareCrowEffect} effect, " +
-            $"range {newScarecrow.range}, capacity {newScarecrow.cropCapacity}");
-    }
-
-    public static Scarecrow CheckIfScarecrow()
-    {   
-        Scarecrow newScarecrow = null;
-
-        Database.GetData<ItemData>(UnifiedTotemId, itemData =>
-        {
-            if (itemData?.useItem is not Placeable placeable || placeable._decoration is not Scarecrow)
-            {
-                Plugin.logger.LogError(
-                    $"UnifiedTotems: Custom item {UnifiedTotemId} failed to convert into a Scarecrow decoration");
-                return;
-            }
-
-            Plugin.logger.LogInfo(
-                $"UnifiedTotems: Custom item {UnifiedTotemId} successfully converted into a Scarecrow decoration.");
-            
-            newScarecrow = placeable._decoration as Scarecrow;
-        });
-
-        return newScarecrow;
     }
 
     public static void CopyBaseToDerived<TBase, TDerived>(TBase source, TDerived target) where TDerived : TBase
@@ -200,18 +156,18 @@ public static class ItemHandler
         {
             if (itemData == null)
             {
-                Plugin.logger.LogError($"DebugCheckTotemInDatabase: Item {UnifiedTotemId} not found in Database.");
+                Plugin.logger.LogError($"CheckTotemInDatabase: Item {UnifiedTotemId} not found in Database.");
                 return;
             }
 
             if (itemData.useItem is not Placeable placeable || placeable._decoration is not Scarecrow scarecrow)
             {
-                Plugin.logger.LogError($"DebugCheckTotemInDatabase: Item {UnifiedTotemId} is not a Scarecrow decoration.");
+                Plugin.logger.LogError($"CheckTotemInDatabase: Item {UnifiedTotemId} failed to be configured as a Scarecrow decoration.");
                 return;
             }
 
-            Plugin.logger.LogInfo($"DebugCheckTotemInDatabase: Item {UnifiedTotemId} is a valid Scarecrow decoration.");
-            Plugin.logger.LogInfo($"DebugCheckTotemInDatabase: Scarecrow range: {scarecrow.range}, capacity: {scarecrow.cropCapacity}, effect: {scarecrow.scareCrowEffect}, secondary preview sprite: {placeable._secondaryPreviewSprite}, preview offset: {placeable.previewOffset}");
+            Plugin.logger.LogInfo($"CheckTotemInDatabase: Item {UnifiedTotemId} is a valid Scarecrow decoration.");
+            Plugin.logger.LogInfo($"CheckTotemInDatabase: Scarecrow range: {scarecrow.range}, capacity: {scarecrow.cropCapacity}, effect: {scarecrow.scareCrowEffect}, secondary preview sprite: {placeable._secondaryPreviewSprite}, preview offset: {placeable.previewOffset}");
         });
     }
 }
