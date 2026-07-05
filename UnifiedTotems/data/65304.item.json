@@ -1,7 +1,7 @@
 {
-	"id": 65301,
+	"id": 65304,
 	"type": "decoration",
-	"name": "Harvest Totem",
+	"name": "Atlas Totem",
 	"description": "A powerful totem combining several vanilla totem effects.",
 	"helpDescription": "Example: Royal + seasonal totem effects in one placement.",
 	"useDescription": "(Left click to place)",
