@@ -6,11 +6,41 @@
     <Version>1.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
-    <!-- Your corrected game path on the D drive -->
-    <GamePath>C:\Program Files (x86)\Steam\steamapps\common\Sun Haven</GamePath>
+    
+    <NoWarn>$(NoWarn);MSB4011;NU1603;CS0436</NoWarn>
   </PropertyGroup>
 
-   <ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+      <DebugSymbols>true</DebugSymbols>
+      <DebugType>full</DebugType>
+      <Optimize>false</Optimize>
+      <OutputPath>bin\Debug\</OutputPath>
+      <DefineConstants>DEBUG;TRACE</DefineConstants>
+      <ErrorReport>prompt</ErrorReport>
+      <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <StartAction>Program</StartAction>
+    <StartProgram>$(GamePath)\Sun Haven.exe</StartProgram>
+    <StartArguments>-console</StartArguments>
+    <StartWorkingDirectory>$(GamePath)</StartWorkingDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Sirenix.Serialization">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Sirenix.Serialization.dll</HintPath>
+        <Private>false</Private>
+    </Reference>
     <Reference Include="BepInEx">
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
@@ -20,15 +50,31 @@
     <Reference Include="UnityEngine">
       <HintPath>$(GamePath)\Sun Haven_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.ResourceManager">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Unity.ResourceManager.dll</HintPath>
+        <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+        <Private>false</Private>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(GamePath)\Sun Haven_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="ZeroFormatter">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\ZeroFormatter.dll</HintPath>
+        <Private>false</Private>
+    </Reference>        
+    <Reference Include="ZeroFormatter">
+        <HintPath>$(GamePath)\Sun Haven_Data\Managed\ZeroFormatter.Interfaces.dll</HintPath>
+        <Private>false</Private>
+    </Reference> 
     <Reference Include="Assembly-CSharp">
       <HintPath>$(GamePath)\Sun Haven_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Sirenix.Serialization">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Sirenix.Serialization.dll</HintPath>
-        <Private>false</Private>
     </Reference>
     <!--
       Sun Haven game code keeps many useful APIs private/internal (e.g. Database.ids).
@@ -50,27 +96,7 @@
     <Reference Include="PSS" Publicize="true">
         <HintPath>$(GamePath)\Sun Haven_Data\Managed\PSS.Database.dll</HintPath>
         <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\UnityEngine.UI.dll</HintPath>
-        <Private>false</Private>
-    </Reference>        
-    <Reference Include="Unity.ResourceManager">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Unity.ResourceManager.dll</HintPath>
-        <Private>false</Private>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Unity.TextMeshPro.dll</HintPath>
-        <Private>false</Private>
-    </Reference>
-    <Reference Include="ZeroFormatter">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\ZeroFormatter.dll</HintPath>
-        <Private>false</Private>
-    </Reference>        
-    <Reference Include="ZeroFormatter">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\ZeroFormatter.Interfaces.dll</HintPath>
-        <Private>false</Private>
-    </Reference>        
+    </Reference>   
     <Reference Include="DOVirtual">
         <HintPath>$(GamePath)\Sun Haven_Data\Managed\DOTween.dll</HintPath>
         <Private>false</Private>
@@ -95,7 +121,6 @@
         <HintPath>$(GamePath)\Sun Haven_Data\Managed\QFSW.QC.dll</HintPath>
         <Private>false</Private>
     </Reference>
-
     <!--
       Publicize Include must match the DLL file name (without .extension), not Reference Include.
       Without Krafs.Publicizer installed, these lines and Publicize="true" above do nothing.
@@ -104,13 +129,17 @@
     <Publicize Include="PSS.Database" />
   </ItemGroup>
 
-   <ItemGroup>
-     <!-- Build-only: exposes private game APIs at compile time; not bundled into the mod DLL. -->
-     <PackageReference Include="Krafs.Publicizer" Version="2.3.0">
-       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-       <PrivateAssets>all</PrivateAssets>
-     </PackageReference>
-   </ItemGroup>
+  <ItemGroup>
+    <!-- Build-only: exposes private game APIs at compile time; not bundled into the mod DLL. -->
+    <PackageReference Include="Krafs.Publicizer" Version="2.3.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
+    <PackageReference Include="UnityEngine.Modules" Version="2019.3.15" IncludeAssets="compile" />
+  </ItemGroup>
 
    <ItemGroup>
      <None Update="data\**\*">

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Wish;
 using PSS;
+using UnityEngine;
 
 namespace UnifiedTotems;
 
@@ -18,4 +19,7 @@ public static class UnifiedTotemState
     public static int Range { get; set; } = 5;
 
     public static int CropCapacity { get; set; } = 120;
+
+    public static Sprite secondaryPreviewSprite  { get; set; } = null;
+    public static Vector2 previewOffset { get; set; } = Vector2.zero;
 }

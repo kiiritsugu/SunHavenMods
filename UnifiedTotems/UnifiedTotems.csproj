@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <AssemblyName>UnifiedTotems</AssemblyName>
+    <Description>Combines multiple totem functionalities into Unified Totems</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Morthy.Util\FileLoader.cs" Link="FileLoader.cs" />
+    <Compile Include="..\Morthy.Util\SpriteUtil.cs" Link="SpriteUtil.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="img\*.png" />
+  </ItemGroup>
+
+  <Import Project="..\private.targets" />
+  <Import Project="..\solution.targets" />
+  
+</Project>
