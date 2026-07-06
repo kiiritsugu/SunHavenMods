@@ -29,7 +29,7 @@ public static class ItemHandler
         // Convert each decoration to scarecrow and check if the conversion was successful.
         foreach (KeyValuePair<int, ScareCrowEffect[]> pair in TotemIndex.TotemDictionary)
         {
-            Database.GetData<ItemData>(pair.Key, itemData => ConfigureAsScarecrow(itemData, pair.Value));
+            Database.GetData<ItemData>(pair.Key, ConfigureAsScarecrow);
 
             // Health check: log the final configuration of the unified totem.
             DebugCheckTotemInDatabase(pair.Key);
@@ -38,7 +38,7 @@ public static class ItemHandler
         UnifiedTotemState.IsConfigured = true;
     }
 
-    private static void ConfigureAsScarecrow(ItemData data, ScareCrowEffect[] combinedEffects)
+    private static void ConfigureAsScarecrow(ItemData data)
     {
         Plugin.logger.LogInfo($"UnifiedTotems: Configuring custom item {data?.name} as a Scarecrow decoration.");
 
@@ -78,12 +78,8 @@ public static class ItemHandler
         newScarecrow.range = UnifiedTotemState.Range;
         newScarecrow.cropCapacity = UnifiedTotemState.CropCapacity;
 
-        //Atach the UnifiedTotem component to hold extra properties and methods
-        UnifiedTotem unifiedTotem = newScarecrow.gameObject.AddComponent<UnifiedTotem>();
-        foreach (ScareCrowEffect effect in combinedEffects)
-        {
-            unifiedTotem.CombinedEffects.Add(effect);
-        }
+        //Atach the UnifiedTotem component to hold extra properties and logic
+        newScarecrow.gameObject.AddComponent<UnifiedTotem>();
         
         placeable._decoration = newScarecrow;
     }

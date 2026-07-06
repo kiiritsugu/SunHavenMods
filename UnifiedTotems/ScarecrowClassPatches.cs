@@ -17,6 +17,7 @@ public static class ScarecrowClassPatches
     {
       if (crop != null && crop.data != null && __instance != null)
       {
+        Plugin.logger.LogInfo($"Testing purposes scarecrow: name:{__instance.name} range:{__instance.range} cropCapacity:{__instance.cropCapacity}");
         ApplyUnifiedTotemEffects(__instance, crop);
       }
     }
@@ -41,7 +42,12 @@ public static class ScarecrowClassPatches
 
       if(unifiedTotem != null)
       {
-        Plugin.logger.LogInfo($"UnifiedTotems: Applying effects from Scarecrow {scarecrow} to Crop. Totem's scareCrowEffects: {string.Join(", ", unifiedTotem.CombinedEffects)}");
+        if(unifiedTotem.initialized == false)
+        {
+          unifiedTotem.InitializeTotem();
+        }
+
+        //Plugin.logger.LogInfo($"UnifiedTotems: Applying effects from Scarecrow {scarecrow} to Crop. Totem's scareCrowEffects: {string.Join(", ", unifiedTotem.CombinedEffects)}");
         foreach (ScareCrowEffect effect in unifiedTotem.CombinedEffects)
         {
           if (!crop.data.scareCrowEffects.Contains(effect))
@@ -56,6 +62,7 @@ public static class ScarecrowClassPatches
         if (!crop.data.scareCrowEffects.Contains(scarecrow.scareCrowEffect))
           {
             crop.data.scareCrowEffects.Add(scarecrow.scareCrowEffect);
+            Plugin.logger.LogInfo($"UnifiedTotems: Applied default scareCrowEffect: {scarecrow.scareCrowEffect} to Crop.");
           }
       }
 
