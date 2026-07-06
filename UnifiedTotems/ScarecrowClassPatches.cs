@@ -10,43 +10,8 @@ namespace UnifiedTotems;
 public static class ScarecrowClassPatches
 {
   [HarmonyPrefix]
-  [HarmonyPatch(typeof(Scarecrow), "OnPlaced")]
-  public static void ScarecrowOnPlaced(Scarecrow __instance) //Write atributes from dictionary before the scarecrow behaviour is executed
-  {
-    try
-    {
-      if (__instance != null)
-      {
-        UnifiedTotem unifiedTotem = __instance.gameObject.GetComponent<UnifiedTotem>();
-        Decoration decoration = __instance.gameObject.GetComponent<Decoration>();
-        int totemID = decoration.id;
-        
-        if (unifiedTotem == null)
-        {
-          return;
-        }
-
-        // Retrieve the combined effects for this totem from the TotemIndex
-        if (TotemIndex.TotemDictionary.TryGetValue(totemID, out ScareCrowEffect[] combinedEffects))
-        {
-            unifiedTotem.CombinedEffects = new List<ScareCrowEffect>(combinedEffects);
-            Plugin.logger.LogInfo($"ScarecrowOnPlaced: {decoration.name} received effects: {string.Join(", ", combinedEffects)}");
-        }
-        else
-        {
-            Plugin.logger.LogWarning($"ScarecrowOnPlaced: No combined effects found for {decoration.name} (sourceId: {totemID}).");
-        }
-      }
-    }
-    catch (Exception err)
-    {
-      Plugin.logger.LogError(err);
-    }
-  }
-
-  [HarmonyPostfix]
   [HarmonyPatch(typeof(Scarecrow), "ApplyEffectsToCrop")]
-  public static void ApplyEffectsToCropPostfix(Scarecrow __instance, Crop crop) //Runs after vanilla apply effects to crop behaviour.
+  public static bool ApplyEffectsToCropPrefix(Scarecrow __instance, Crop crop) //Runs before vanilla, apply effects to crop, prevent default behaviour if sucessfull.
   {
     try
     {
@@ -58,7 +23,9 @@ public static class ScarecrowClassPatches
     catch (Exception err)
     {
       Plugin.logger.LogError(err);
+      return true; // Allow the original method to execute if an error occurs
     }
+    return false; // Prevent the original method from executing
   }
 
   private static void ApplyUnifiedTotemEffects(Scarecrow scarecrow, Crop crop) //Applies the combined effects from the UnifiedTotem component to the crop.
@@ -83,6 +50,13 @@ public static class ScarecrowClassPatches
           }
         }
         Plugin.logger.LogInfo($"UnifiedTotems: Finished applying to Crop. Crop Effects: {string.Join(", ", crop.data.scareCrowEffects)}");
+      } 
+      else
+      {
+        if (!crop.data.scareCrowEffects.Contains(scarecrow.scareCrowEffect))
+          {
+            crop.data.scareCrowEffects.Add(scarecrow.scareCrowEffect);
+          }
       }
 
       crop.SaveMeta();
