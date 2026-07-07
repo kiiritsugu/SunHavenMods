@@ -43,7 +43,16 @@ public class Plugin : BaseUnityPlugin
             }
             catch (Exception err)
             {
-                logger.LogError(err);
+                logger.LogError($"Error occurred while creating totems: {err}");
+            }
+
+            try
+            {
+                ItemHandler.PatchCropColliders();
+            }
+            catch (Exception err)
+            {
+                logger.LogError($"Error occurred while patching crop colliders: {err}");
             }
         }
     }

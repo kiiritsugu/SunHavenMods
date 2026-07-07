@@ -190,4 +190,44 @@ public static class ItemHandler
         });
     }
 
+   public static void PatchCropColliders()
+    {
+        try
+        {
+            Database db = Database.Instance;
+            if (db == null) return;
+
+            // Direct, publicized access to the cache! 
+            // It maps: Dictionary<Type, Dictionary<object, LinkedListNode<CacheItem>>>
+            HashSet<int> validIDs = db.validIDs;
+
+            if (validIDs == null || validIDs.Count == 0)
+            {
+                Plugin.logger.LogWarning("[TotemMod] Database validIDs is empty or null.");
+                return;
+            }
+
+
+            int dynamicCropCount = 0;
+
+            foreach (int id in validIDs)
+            {
+                Database.GetData<ItemData>(id, itemData =>
+                {
+                    if (itemData == null) return;
+
+                    if (itemData.useItem is not Seeds seed || seed._crop is not Crop crop) return;
+
+                    Utilitaries.TilePerfectBoxColider2D(crop, false);
+                    dynamicCropCount++;
+                });
+            }
+
+            Plugin.logger.LogInfo($"[TotemMod] Traversed in-memory cache and successfully injected colliders into {dynamicCropCount} Seed -> Crop prefabs.");
+        }
+        catch (Exception ex)
+        {
+            Plugin.logger.LogError($"Error occurred while patching crop colliders: {ex}");
+        }
+    }
 }

@@ -22,13 +22,13 @@ public static class Utilitaries
       }
       
       // Add a new BoxCollider2D to the component's GameObject
-      BoxCollider2D logicCollider = component.gameObject.AddComponent<BoxCollider2D>();
+      BoxCollider2D newCollider = component.gameObject.AddComponent<BoxCollider2D>();
       
       // Enforce the perfect 1-tile size and center alignment
-      logicCollider.size = new Vector2(1.0f, 1.0f);
-      logicCollider.offset = new Vector2(0.5f, 0.5f);
+      newCollider.size = new Vector2(1.0f, 1.0f);
+      newCollider.offset = new Vector2(0.5f, 0.5f);
 
       // Mark as a trigger so characters walk through it, but BoxCastAll still detects it
-      logicCollider.isTrigger = trigger;
+      newCollider.isTrigger = trigger;
   }
 }

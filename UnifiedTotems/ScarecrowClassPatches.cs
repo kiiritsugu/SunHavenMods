@@ -106,17 +106,6 @@ public static class CropBoxCastColliderPatch
     }
 }
 
-[HarmonyPatch(typeof(Crop), nameof(Crop.OnPlaced))]
-//Replaced the colider on crops for the new box cast method, to ensure the crop colider is centered and sized 1 tile, to ensure the box cast is centered on the crop and not offset by the colider.
-public static class PhysicalColliderPatch
-{
-  [HarmonyPostfix]
-  static void Postfix(Crop __instance)
-  {
-    Utilitaries.TilePerfectBoxColider2D(__instance, true);
-  }
-}
-
 [HarmonyPatch(typeof(Scarecrow), nameof(Scarecrow.CalculateScarecrowEffectsForNearbyCrops))]
 // This patch replaces the vanilla CalculateScarecrowEffectsForNearbyCrops method with a more accurate and efficient implementation. 11x11 = placed tile + 5 to all sides
 public static class ScarecrowBoxCastColliderPatch
