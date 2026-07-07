@@ -80,8 +80,12 @@ public static class ItemHandler
 
         //Atach the UnifiedTotem component to hold extra properties and logic
         newScarecrow.gameObject.AddComponent<UnifiedTotem>();
+
+        Utilitaries.TilePerfectBoxColider2D(newScarecrow, false);
         
         placeable._decoration = newScarecrow;
+
+
     }
 
     //Collects scarecrow data from vanilla totems and saves it to UnifiedTotemState
@@ -104,6 +108,30 @@ public static class ItemHandler
 
         Plugin.logger.LogInfo(
             $"Collected {scarecrow.scareCrowEffect} from vanilla item {data.name} ({sourceId})");
+    }
+
+    //
+    public static void AdjustVanillaTotems()
+    {
+        foreach (int totemId in TotemIndex.VanillaTotemIds)
+        {
+            Database.GetData<ItemData>(totemId, itemData =>
+            {
+                if (itemData == null)
+                {
+                    Plugin.logger.LogError($"AdjustVanillaTotems: Item {itemData.id} not found in Database.");
+                    return;
+                }
+                if (itemData.useItem is not Placeable placeable || placeable._decoration is not Scarecrow scarecrow)
+                {
+                    Plugin.logger.LogError($"AdjustVanillaTotems: Item {itemData.name} with ID {itemData.id} is not a totem, verify the item id or game version.");
+                    return;
+                }               
+
+
+                Utilitaries.TilePerfectBoxColider2D(scarecrow, false);
+            });
+        }
     }
 
     public static void CopyBaseToDerived<TBase, TDerived>(TBase source, TDerived target) where TDerived : TBase
@@ -161,4 +189,5 @@ public static class ItemHandler
             Plugin.logger.LogInfo($"CheckTotemInDatabase: Scarecrow range: {scarecrow.range}, capacity: {scarecrow.cropCapacity}, effect: {scarecrow.scareCrowEffect}, combined effects: {string.Join(", ", placeable._decoration.GetComponents<UnifiedTotem>().SelectMany(unifiedTotem => unifiedTotem.CombinedEffects))}");
         });
     }
+
 }

@@ -34,6 +34,7 @@ public class UnifiedTotem : MonoBehaviour
 
     public void InitializeTotem()
     {
+      if (initialized) { return; }
       Decoration decoration = GetComponentInParent<Decoration>();
 
       if (decoration != null)

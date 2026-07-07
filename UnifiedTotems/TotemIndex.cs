@@ -47,6 +47,8 @@ public static class TotemIndex
       { SeasonalTotemId, SeasonalEffects },
       { AtlasTotemId, AtlasEffects }
   };
+
+  public static int [] VanillaTotemIds = new int[] { 10696, 10697, 10698, 10699 };
 }
 
 

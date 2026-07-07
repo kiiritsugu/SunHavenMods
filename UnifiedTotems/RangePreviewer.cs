@@ -22,9 +22,8 @@ public static class RangePreviewer
 
     //Create a sprite from png image
     placeable._secondaryPreviewSprite = SpriteUtil.CreateSprite(FileLoader.LoadFileBytes(Assembly.GetExecutingAssembly(), $"preview.png"), new Vector2(p, p), $"Totem preview");
-
-    //Align the preview sprite with the decoration graphics, with a fine tune adjustment to alignment.
-    placeable.previewOffset = new Vector2(-0.1f, 0);
-    placeable._decoration.transform.Find("Graphics").localPosition = new Vector3(-0.1f, 0, 0);
+    
+    placeable.previewOffset = new Vector2(0, 0);
+    //placeable._decoration.transform.Find("Graphics").localPosition = new Vector3(-0.1f, 0, 0);
   }
 }
