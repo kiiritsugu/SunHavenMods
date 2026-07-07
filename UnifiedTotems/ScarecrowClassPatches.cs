@@ -71,71 +71,126 @@ public static class ApplyScarecrowEffectsPatch
   }
 }
 
-
 [HarmonyPatch(typeof(Crop), nameof(Crop.GetNearbyScarecrowEffects))]
-// This patch replaces the vanilla GetNearbyScarecrowEffects method with a more accurate and efficient implementation. 11x11 = placed tile + 5 to all sides
+// This patch replaces the vanilla GetNearbyScarecrowEffects method with a more accurate and efficient trough a utilitary method
 public static class CropBoxCastColliderPatch
 {
     [HarmonyPrefix]
     static bool Prefix(Crop __instance)
     {
-        //Get the center of the crop's collider in world space
-        Vector2 castCenter = __instance.RealCenter;
+      if (__instance == null) return false;
+      // Use the utility method to perform a box cast and apply effects for each unique Scarecrow found
+      Utilitaries.BoxCastHitsOnTypeAction<Scarecrow>(__instance.RealCenter, UnifiedTotemState.Range, scarecrow =>
+      {
+        scarecrow.ApplyEffectsToCrop(__instance);
+      }, false);
 
-        // 11x11 grid box cast size, center tile +5 in every direction, adjusted for isometric projection
-        // 1.4142135f is a magical number because the vanilla uses a isometric projection and y axis is squished
-        Vector2 boxSize = new Vector2(11.0f, 11.0f * 1.4142135f); 
-
-        // Track seen components to prevent double evaluation on multi-collider decorations
-        HashSet<Scarecrow> evaluatedTotems = new HashSet<Scarecrow>();
-
-        // 3. Execute a static box cast centered directly over the snapped crop location
-        foreach (RaycastHit2D hit in Physics2D.BoxCastAll(castCenter, boxSize, 0f, Vector2.zero))
-        {
-            if (hit.transform == null) continue;
-
-            Scarecrow scarecrow = hit.transform.GetComponent<Scarecrow>();
-            if (scarecrow != null && !evaluatedTotems.Contains(scarecrow))
-            {
-                evaluatedTotems.Add(scarecrow);
-                scarecrow.ApplyEffectsToCrop(__instance);
-            }
-        }
-
-        return false; // Skip the original finicky vanilla calculation entirely
+      return false; // Skip the original finicky vanilla calculation entirely
     }
 }
 
 [HarmonyPatch(typeof(Scarecrow), nameof(Scarecrow.CalculateScarecrowEffectsForNearbyCrops))]
-// This patch replaces the vanilla CalculateScarecrowEffectsForNearbyCrops method with a more accurate and efficient implementation. 11x11 = placed tile + 5 to all sides
+// This patch replaces the vanilla CalculateScarecrowEffectsForNearbyCrops method with a more accurate and efficient trough a utilitary method
 public static class ScarecrowBoxCastColliderPatch
 {
     [HarmonyPrefix]
     public static bool Prefix(Scarecrow __instance)
     {
-       //Get the center of the scarecrow's collider in world space
-        Vector2 castCenter = __instance.RealCenter;
+      if (__instance == null) return false;
 
-        //grid box cast size, center tile +range in every direction, adjusted for isometric projection
-        // 1.4142135f is a magical number because the vanilla uses a isometric projection and y axis is squished
-        float width = (__instance.range * 2) + 1f;
-        Vector2 boxSize = new Vector2(width, width * 1.4142135f);
+      // Use the utility method to perform a box cast and apply effects for each unique Scarecrow found
+      Utilitaries.BoxCastHitsOnTypeAction<Crop>(__instance.RealCenter, UnifiedTotemState.Range, crop =>
+      {
+        __instance.ApplyEffectsToCrop(crop);
+      }, false);       
 
-        // Track seen crops to prevent double evaluation on multi-collider crop setups
-        HashSet<Crop> evaluatedCrops = new HashSet<Crop>();
-
-        // Execute the identical static box cast centered over the totem location
-        foreach (RaycastHit2D hit in Physics2D.BoxCastAll(castCenter, boxSize, 0f, Vector2.zero))
-        {
-            if (hit.transform == null) continue;
-
-            Crop crop = hit.transform.GetComponent<Crop>();
-            if (crop != null && evaluatedCrops.Add(crop))
-            {
-                __instance.ApplyEffectsToCrop(crop);
-            }
-        }
-
-        return false; // Skip the original finicky vanilla calculation entirely
+      return false; // Skip the original finicky vanilla calculation entirely
     }
+}
+
+[HarmonyPatch(typeof(Scarecrow))]
+public static class TotemRemovalPatches
+{
+  [HarmonyPatch(nameof(Scarecrow.RemoveScarecrowEffectsForNearbyCrops))]
+  [HarmonyPrefix]
+  public static bool RemoveScarecrowEffectsForNearbyCropsPrefix(Scarecrow __instance)
+  {
+    if (__instance == null) return false; 
+
+    // Use the utility method to perform a box cast and do remove effects evaluation for each unique crop found
+    Utilitaries.BoxCastHitsOnTypeAction<Crop>(__instance.RealCenter, __instance.range, crop => 
+    {
+      EvaluateAndRemoveEffects(__instance, crop);
+    });
+
+    return false; // Skip vanilla finicky logic entirely
+  }
+
+  private static void EvaluateAndRemoveEffects(Scarecrow removedTotem, Crop crop)
+  {
+    if (crop == null || crop.data == null || crop.data.scareCrowEffects == null) return;
+
+    // Determine all individual sub-effects projected by this specific removing totem instance
+    List<ScareCrowEffect> effectsToRemove = new List<ScareCrowEffect>();
+
+    // Check if it's a unified totem trough the component and if so add the combined effects to removal list
+    UnifiedTotem unifiedTotem = removedTotem.GetComponentInChildren<UnifiedTotem>();
+    if (unifiedTotem != null && unifiedTotem.initialized)
+    {
+      effectsToRemove.AddRange(unifiedTotem.CombinedEffects);
+    }
+    else
+    {
+      // add the vanilla effect to removal list
+      effectsToRemove.Add(removedTotem.scareCrowEffect);
+    }
+
+    //Perform a box-cast to aggregate all effects provided by other nearby totems
+    HashSet<ScareCrowEffect> effectsProvidedByOthers = new HashSet<ScareCrowEffect>();
+
+    Utilitaries.BoxCastHitsOnTypeAction<Scarecrow>(crop.RealCenter, 5f, nearbyTotem =>
+    {
+      if (nearbyTotem == removedTotem) return;
+
+      UnifiedTotem nearbyUnifiedTotem = nearbyTotem.GetComponentInChildren<UnifiedTotem>();
+
+      if (nearbyUnifiedTotem != null && nearbyUnifiedTotem.initialized)
+      {
+        // Collect all effects from this totem
+        foreach (var effect in nearbyUnifiedTotem.CombinedEffects)
+        {
+          effectsProvidedByOthers.Add(effect);
+        }
+      }
+      else
+      {
+        // Collect the vanilla effect from this totem
+        effectsProvidedByOthers.Add(nearbyTotem.scareCrowEffect);
+      }
+    });
+
+    bool metadataChanged = false;
+
+    //Process every effect this totem provided against the aggregate neighbor map
+    foreach (ScareCrowEffect effect in effectsToRemove)
+    {
+      // Skip if the crop doesn't have this effect
+      if (!crop.data.scareCrowEffects.Contains(effect)) continue;
+
+      // Check our aggregate map to see if any nearby totem is still providing this effect
+      if (effectsProvidedByOthers.Contains(effect)) continue;
+      
+      // If not, remove the effect from the crop and mark metadata as changed
+      crop.data.scareCrowEffects.Remove(effect);
+      metadataChanged = true;
+    }
+
+    //Force structural save
+    if (metadataChanged)
+    {
+      crop.SaveMeta();
+      crop.SendNewMeta(crop.meta);
+    }
+  }
+
 }

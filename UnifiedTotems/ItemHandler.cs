@@ -113,13 +113,13 @@ public static class ItemHandler
     //
     public static void AdjustVanillaTotems()
     {
-        foreach (int totemId in TotemIndex.VanillaTotemIds)
+        foreach (int totemId in TotemIndex.VanillaTotems.Keys)
         {
             Database.GetData<ItemData>(totemId, itemData =>
             {
                 if (itemData == null)
                 {
-                    Plugin.logger.LogError($"AdjustVanillaTotems: Item {itemData.id} not found in Database.");
+                    Plugin.logger.LogError($"AdjustVanillaTotems: Item {totemId} not found in Database.");
                     return;
                 }
                 if (itemData.useItem is not Placeable placeable || placeable._decoration is not Scarecrow scarecrow)
@@ -218,7 +218,7 @@ public static class ItemHandler
 
                     if (itemData.useItem is not Seeds seed || seed._crop is not Crop crop) return;
 
-                    Utilitaries.TilePerfectBoxColider2D(crop, false);
+                    Utilitaries.TilePerfectBoxColider2D(crop, true);
                     dynamicCropCount++;
                 });
             }

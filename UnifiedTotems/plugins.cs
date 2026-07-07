@@ -48,6 +48,15 @@ public class Plugin : BaseUnityPlugin
 
             try
             {
+                ItemHandler.AdjustVanillaTotems();
+            }
+            catch (Exception err)
+            {
+                logger.LogError($"Error occurred while adjusting vanilla totems: {err}");
+            }
+
+            try
+            {
                 ItemHandler.PatchCropColliders();
             }
             catch (Exception err)
