@@ -1,9 +1,9 @@
 {
 	"id": 65303,
 	"type": "decoration",
-	"name": "Seasonal Totem",
-	"description": "A powerful totem combining several vanilla totem effects.",
-	"helpDescription": "Example: Royal + seasonal totem effects in one placement.",
+	"name": "Four Seasons Totem",
+	"description": "A powerful totem with a Four Seasons Gem embedded in it. Holds several blessings.",
+	"helpDescription": "Crops within 5 tiles of this totem have a 4% chance to drop an Additional Crop when harvested, are protected against all Seasonal Pests, and have a 80% chance to resist Seasonal Hazards.",
 	"useDescription": "(Left click to place)",
 	"stackSize": 999,
 	"canSell": true,
@@ -25,7 +25,8 @@
 			"list": "RecipeList_Farmer's Table",
 			"hours": 2,
 			"inputs": [
-				{"id": 1200, "amount": 1}
+				{"id": 65311, "amount": 1},
+				{"id": 65315, "amount": 1}
 			]
 		}
 	]

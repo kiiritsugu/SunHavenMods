@@ -2,8 +2,8 @@
 	"id": 65301,
 	"type": "decoration",
 	"name": "Harvest Totem",
-	"description": "A powerful totem combining several vanilla totem effects.",
-	"helpDescription": "Example: Royal + seasonal totem effects in one placement.",
+	"description": "A powerful totem with a Harvest Gem embedded in it. Holds several blessings.",
+	"helpDescription": "Crops within 5 tiles of this totem grant 2 extra farming experience per harvest, grant 2 gold every day, collected on harvest, grow 15% faster and have 20% chance to stay watered overnight.",
 	"useDescription": "(Left click to place)",
 	"stackSize": 999,
 	"canSell": true,
@@ -25,7 +25,8 @@
 			"list": "RecipeList_Farmer's Table",
 			"hours": 2,
 			"inputs": [
-				{"id": 1200, "amount": 1}
+				{"id": 65311, "amount": 1},
+				{"id": 65313, "amount": 1}
 			]
 		}
 	]

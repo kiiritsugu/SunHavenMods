@@ -82,9 +82,20 @@ public static class ItemHandler
         newScarecrow.gameObject.AddComponent<UnifiedTotem>();
 
         Utilitaries.TilePerfectBoxColider2D(newScarecrow, false);
-        
+
         placeable._decoration = newScarecrow;
 
+        //Sprite position adjustment fine tuned for 36px Sprites
+        if (placeable != null && placeable._decoration != null)
+        {
+            Transform graphicsTransform = placeable._decoration.transform.Find("Graphics");
+
+            if (graphicsTransform != null)
+            {
+                graphicsTransform.localPosition = new Vector3(-0.25f, 0f, 0f);
+            }
+        }
+        placeable.previewOffset = new Vector2(-0.25f, 0f);
 
     }
 

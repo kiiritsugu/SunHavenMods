@@ -1,0 +1,28 @@
+{
+	"id": 65315,
+	"name": "Four Seasons Gem",
+	"description": "An ever-shifting gem that effortlessly deflects the chaotic whims of nature.",
+	"helpDescription": "Used to craft magical totems.",
+	"useDescription": "",
+	"stackSize": 999,
+	"canSell": true,
+	"canTrade": true,
+	"canTrash": true,
+	"goldSellPrice": 300,
+	"orbsSellPrice": 0,
+	"ticketSellPrice": 0,
+	"category": 2,
+	"rarity": 1,
+	"recipes": [
+		{
+			"list": "RecipeList_Jeweler's Desk",
+			"hours": 4,
+			"inputs": [
+				{"id": 10735, "amount": 1},
+				{"id": 10736, "amount": 1},
+				{"id": 10734, "amount": 1},
+				{"id": 10737, "amount": 1}
+			]
+		}
+	]
+}

@@ -1,0 +1,28 @@
+{
+	"id": 65313,
+	"name": "Harvest Gem",
+	"description": "A vibrant green jewel overflowing with bountiful life, morning dew, and prosperous energy.",
+	"helpDescription": "Used to craft magical totems.",
+	"useDescription": "",
+	"stackSize": 999,
+	"canSell": true,
+	"canTrade": true,
+	"canTrash": true,
+	"goldSellPrice": 300,
+	"orbsSellPrice": 0,
+	"ticketSellPrice": 0,
+	"category": 2,
+	"rarity": 1,
+	"recipes": [
+		{
+			"list": "RecipeList_Jeweler's Desk",
+			"hours": 4,
+			"inputs": [
+				{"id": 10733, "amount": 1},
+				{"id": 10694, "amount": 1},
+				{"id": 10695, "amount": 1},
+				{"id": 10696, "amount": 1}
+			]
+		}
+	]
+}

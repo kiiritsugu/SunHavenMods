@@ -1,0 +1,28 @@
+{
+	"id": 65314,
+	"name": "Experience Gem",
+	"description": "A brilliant gem that hums with the residual energy of grand adventures.",
+	"helpDescription": "Used to craft magical totems.",
+	"useDescription": "",
+	"stackSize": 999,
+	"canSell": true,
+	"canTrade": true,
+	"canTrash": true,
+	"goldSellPrice": 300,
+	"orbsSellPrice": 0,
+	"ticketSellPrice": 0,
+	"category": 2,
+	"rarity": 1,
+	"recipes": [
+		{
+			"list": "RecipeList_Jeweler's Desk",
+			"hours": 4,
+			"inputs": [
+				{"id": 10699, "amount": 1},
+				{"id": 10692, "amount": 1},
+				{"id": 10732, "amount": 1},
+				{"id": 10731, "amount": 1}
+			]
+		}
+	]
+}

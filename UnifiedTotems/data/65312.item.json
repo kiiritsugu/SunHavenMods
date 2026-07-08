@@ -1,0 +1,25 @@
+{
+	"id": 65312,
+	"name": "Glorite Jewel",
+	"description": "Made of condensed glorite, holds a great deal of magical energy.",
+	"helpDescription": "When used to upgrade a totem, gives it a massive boost in area of effect.",
+	"useDescription": "",
+	"stackSize": 999,
+	"canSell": true,
+	"canTrade": true,
+	"canTrash": true,
+	"goldSellPrice": 300,
+	"orbsSellPrice": 0,
+	"ticketSellPrice": 0,
+	"category": 2,
+	"rarity": 1,
+	"recipes": [
+		{
+			"list": "RecipeList_Jeweler's Desk",
+			"hours": 24,
+			"inputs": [
+				{"id": 1206, "amount": 5}
+			]
+		}
+	]
+}

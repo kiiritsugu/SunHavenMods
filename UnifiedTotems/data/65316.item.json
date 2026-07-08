@@ -1,0 +1,27 @@
+{
+	"id": 65316,
+	"name": "Atlas Gem",
+	"description": "A dense, swirling mineral holding fragments of soil from across the world.",
+	"helpDescription": "Used to craft magical totems.",
+	"useDescription": "",
+	"stackSize": 999,
+	"canSell": true,
+	"canTrade": true,
+	"canTrash": true,
+	"goldSellPrice": 300,
+	"orbsSellPrice": 0,
+	"ticketSellPrice": 0,
+	"category": 2,
+	"rarity": 1,
+	"recipes": [
+		{
+			"list": "RecipeList_Jeweler's Desk",
+			"hours": 4,
+			"inputs": [
+				{"id": 10739, "amount": 1},
+				{"id": 10697, "amount": 1},
+				{"id": 10693, "amount": 1}
+			]
+		}
+	]
+}
