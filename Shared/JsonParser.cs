@@ -102,7 +102,9 @@ public static class JsonParser
             else break;
         }
         string numStr = json.Substring(start, index - start);
-        if (isFloat && float.TryParse(numStr, out float f)) return f;
+
+        if (isFloat && float.TryParse(numStr, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float f)) return f;
+
         if (int.TryParse(numStr, out int i)) return i;
         return numStr;
     }

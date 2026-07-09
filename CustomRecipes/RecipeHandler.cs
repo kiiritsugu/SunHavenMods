@@ -188,6 +188,14 @@ public static class RecipeHandler
         }
     }
 
+    /// <summary>
+    /// Extracts properties from a parsed JSON node dictionary and maps them safely into a unified RecipeDefinition instance.
+    /// Handles default fallback values for optional numeric properties and processes required inner ingredients lists.
+    /// </summary>
+    /// <param name="node">The raw dictionary collection representing an individual JSON recipe node configuration.</param>
+    /// <param name="outputId">The resolved target Sun Haven item database ID produced by this specific configuration path.</param>
+    /// <param name="fileName">The string name of the source data file being processed, used to provide precise console warning markers.</param>
+    /// <returns>A structured <see cref="RecipeDefinition"/> if mapping succeeds; otherwise, <see langword="null"/> if structural properties fail basic validation rules.</returns>
     private static RecipeDefinition ParseSingleRecipeNode(Dictionary<string, object> node, int outputId, string fileName)
     {
         RecipeDefinition recipe = new()
@@ -195,7 +203,8 @@ public static class RecipeHandler
             list = node.ContainsKey("list") ? node["list"]?.ToString() : "",
             outputId = outputId,
             amount = node.ContainsKey("amount") ? Convert.ToInt32(node["amount"]) : 1,
-            hours = node.ContainsKey("hours") ? Convert.ToSingle(node["hours"]) : 1f,
+            hours = node.ContainsKey("hours") ? Convert.ToSingle(node["hours"], System.Globalization.CultureInfo.InvariantCulture) : 1f,
+
             inputs = new List<RecipeInputDefinition>()
         };
 
