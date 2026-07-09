@@ -18,21 +18,21 @@ Nexus: https://www.nexusmods.com/profile/MorthyJD/mods
 and to AzraelGodKing for the help on geting started with Sun Haven modding
 https://www.nexusmods.com/profile/AzraelGodKing/mods
 
-File structure
-CustomRecipes/
-│
-├── Docs/
-│   └── Reciepe.MD               <- Documentation on how to structure .recipe.json files
-|
-├── data/
-│   └── *.recipe.json            <- You can place recipes here
-|
-├── Patches/
-│   └── CraftingTablePatch.cs    <- Houses the crafting table Harmony hooks explicitly
-│
-├── Models/
-│   └── RecipeDefinitions.cs     <- Holds RecipeDefinition & RecipeInputDefinition
-│
-├── RecipeRegistry.cs            <- Holds the static NewRecipes dictionary
-├── RecipeHandler.cs             <- Handles reading/parsing AND the injection logic
-└── Plugin.cs                    <- Entrypoint; handles initialization & logging
+## File structure
+## CustomRecipes/
+## │
+## ├── Docs/
+## │   └── Reciepe.MD               <- Documentation on how to structure .recipe.json files
+## |
+## ├── data/
+## │   └── *.recipe.json            <- You can place recipes here
+## |
+## ├── Patches/
+## │   └── CraftingTablePatch.cs    <- Houses the crafting table Harmony hooks explicitly
+## │
+## ├── Models/
+## │   └── RecipeDefinitions.cs     <- Holds RecipeDefinition & RecipeInputDefinition
+## │
+## ├── RecipeRegistry.cs            <- Holds the static NewRecipes dictionary
+## ├── RecipeHandler.cs             <- Handles reading/parsing AND the injection logic
+## └── Plugin.cs                    <- Entrypoint; handles initialization & logging

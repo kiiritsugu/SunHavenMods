@@ -11,8 +11,8 @@
 	"goldSellPrice": 4800,
 	"orbsSellPrice": 0,
 	"ticketSellPrice": 0,
-	"category": 4,
-	"rarity": 1,
+	"category": 2,
+	"rarity": 4,
 	"recipes": [
 		{
 			"list": "RecipeList_Jeweler's Desk",

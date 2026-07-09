@@ -1,0 +1,38 @@
+{
+  "outputId": 65320,
+  "recipes": [
+    {
+      "list": "RecipeList_Wizard Crafting Table",
+      "amount": 1,
+      "hours": 4.0,
+      "inputs": [
+        {
+          "id": 10739,
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "list": "RecipeList_Wizard Crafting Table",
+      "amount": 1,
+      "hours": 4.0,
+      "inputs": [
+        {
+          "id": 10697,
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "list": "RecipeList_Wizard Crafting Table",
+      "amount": 1,
+      "hours": 4.0,
+      "inputs": [
+        {
+          "id": 10693,
+          "amount": 1
+        }
+      ]
+    }
+  ]
+}

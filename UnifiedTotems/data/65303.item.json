@@ -12,8 +12,8 @@
 	"goldSellPrice": 1500,
 	"orbsSellPrice": 0,
 	"ticketSellPrice": 0,
-	"category": 3,
-	"rarity": 2,
+	"category": 4,
+	"rarity": 3,
 	"decoration": {
 		"size": [6, 6],
 		"placeableOnTables": false,

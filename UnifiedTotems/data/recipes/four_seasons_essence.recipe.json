@@ -1,0 +1,49 @@
+{
+  "outputId": 65319,
+  "recipes": [
+    {
+      "list": "RecipeList_Wizard Crafting Table",
+      "amount": 1,
+      "hours": 4.0,
+      "inputs": [
+        {
+          "id": 10735,
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "list": "RecipeList_Wizard Crafting Table",
+      "amount": 1,
+      "hours": 4.0,
+      "inputs": [
+        {
+          "id": 10736,
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "list": "RecipeList_Wizard Crafting Table",
+      "amount": 1,
+      "hours": 4.0,
+      "inputs": [
+        {
+          "id": 10734,
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "list": "RecipeList_Wizard Crafting Table",
+      "amount": 1,
+      "hours": 4.0,
+      "inputs": [
+        {
+          "id": 10737,
+          "amount": 1
+        }
+      ]
+    }
+  ]
+}

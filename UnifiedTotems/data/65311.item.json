@@ -12,7 +12,7 @@
 	"orbsSellPrice": 0,
 	"ticketSellPrice": 0,
 	"category": 2,
-	"rarity": 1,
+	"rarity": 2,
 	"recipes": [
 		{
 			"list": "RecipeList_Jeweler's Desk",
