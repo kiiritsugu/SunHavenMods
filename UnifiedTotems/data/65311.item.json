@@ -8,7 +8,7 @@
 	"canSell": true,
 	"canTrade": true,
 	"canTrash": true,
-	"goldSellPrice": 300,
+	"goldSellPrice": 1000,
 	"orbsSellPrice": 0,
 	"ticketSellPrice": 0,
 	"category": 2,

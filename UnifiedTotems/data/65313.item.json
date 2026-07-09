@@ -8,20 +8,17 @@
 	"canSell": true,
 	"canTrade": true,
 	"canTrash": true,
-	"goldSellPrice": 300,
+	"goldSellPrice": 450,
 	"orbsSellPrice": 0,
 	"ticketSellPrice": 0,
-	"category": 2,
+	"category": 3,
 	"rarity": 1,
 	"recipes": [
 		{
 			"list": "RecipeList_Jeweler's Desk",
 			"hours": 4,
 			"inputs": [
-				{"id": 10733, "amount": 1},
-				{"id": 10694, "amount": 1},
-				{"id": 10695, "amount": 1},
-				{"id": 10696, "amount": 1}
+				{"id": 65317, "amount": 4}
 			]
 		}
 	]

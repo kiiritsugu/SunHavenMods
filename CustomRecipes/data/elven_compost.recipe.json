@@ -1,0 +1,9 @@
+{
+  "list": "RecipeList_Mana Composter",
+  "outputId": 4518,
+  "amount": 5,
+  "hours": 4.0,
+  "inputs": [
+    { "id": 11031, "amount": 1 }
+  ]
+}

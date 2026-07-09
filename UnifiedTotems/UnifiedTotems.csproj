@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  
+
   <PropertyGroup>
     <AssemblyName>UnifiedTotems</AssemblyName>
     <Description>Combines multiple totem functionalities into Unified Totems</Description>
@@ -7,50 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Morthy.Util\FileLoader.cs" Link="FileLoader.cs" />
-    <Compile Include="..\Morthy.Util\SpriteUtil.cs" Link="SpriteUtil.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="img\*.png" />
   </ItemGroup>
 
-  <Import Project="..\private.targets" />
   <Import Project="..\solution.targets" />
-  
-  <!-- Custom BepInEx Auto-Deployment Pipeline -->
-  <Target Name="DeployModToGame" AfterTargets="Build">
-    <!-- 1. Resolve target directories dynamically from your private.targets property -->
-    <PropertyGroup>
-      <ModPluginsDir>$(GamePath)\BepInEx\plugins\UnifiedTotems</ModPluginsDir>
-    </PropertyGroup>
-
-    <!-- 2. Define isolated asset collections to prevent copying external assemblies or symbols -->
-    <ItemGroup>
-      <!-- Explicitly target ONLY your mod's binary -->
-      <ModAssembly Include="$(TargetDir)$(TargetName).dll" />
-      
-      <!-- Recursively scan and preserve structural layout of your custom data folder -->
-      <DataFolderFiles Include="$(TargetDir)data\**\*.*" />
-    </ItemGroup>
-
-    <!-- 3. Execute targeted directory initialization -->
-    <MakeDir Directories="$(ModPluginsDir)" />
-    <MakeDir Directories="$(ModPluginsDir)\data" />
-    
-    <!-- 4. Deploy the primary mod assembly (.dll only) -->
-    <!-- (REMOVED TrustAllFiles here to fix the MSB4064 build error) -->
-    <Copy SourceFiles="@(ModAssembly)" 
-          DestinationFolder="$(ModPluginsDir)" 
-          SkipUnchangedFiles="true"
-          ContinueOnError="false" />
-    
-    <!-- 5. Deploy data assets and cleanly map sub-directory tree structures using RecursiveDir metadata -->
-    <Copy SourceFiles="@(DataFolderFiles)" 
-          DestinationFolder="$(ModPluginsDir)\data\%(RecursiveDir)" 
-          SkipUnchangedFiles="true"
-          ContinueOnError="false" />
-    
-    <Message Importance="high" Text="[UnifiedTotems] Isolated deployment completed successfully directly into: $(ModPluginsDir)" />
-  </Target>
 </Project>

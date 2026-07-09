@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>CustomRecipes</AssemblyName>
+    <Description>Utility mod to add custom crafting recipes trough .recipe.json definition files</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <Import Project="..\solution.targets" />
+</Project>

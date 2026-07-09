@@ -1,23 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
+
+  <Import Project="$(MSBuildThisFileDirectory)private.targets"
+    Condition="Exists('$(MSBuildThisFileDirectory)private.targets')" />
+
   <PropertyGroup>
     <TargetFramework>net481</TargetFramework>
-    <AssemblyName>UnifiedTotems</AssemblyName>
-    <Description>My First Sun Haven Mod</Description>
-    <Version>1.0.0</Version>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
-    
-    <NoWarn>$(NoWarn);MSB4011;NU1603;CS0436</NoWarn>
+    <NoWarn>$(NoWarn)c;NU1603;CS0436</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-      <DebugSymbols>true</DebugSymbols>
-      <DebugType>full</DebugType>
-      <Optimize>false</Optimize>
-      <OutputPath>bin\Debug\</OutputPath>
-      <DefineConstants>DEBUG;TRACE</DefineConstants>
-      <ErrorReport>prompt</ErrorReport>
-      <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -36,10 +37,15 @@
     <StartWorkingDirectory>$(GamePath)</StartWorkingDirectory>
   </PropertyGroup>
 
+  <ItemGroup Condition="'$(AssemblyName)' != 'Shared' ">
+    <Compile Include="$(MSBuildThisFileDirectory)Shared\**\*.cs"
+      Link="Shared\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
   <ItemGroup>
     <Reference Include="Sirenix.Serialization">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Sirenix.Serialization.dll</HintPath>
-        <Private>false</Private>
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\Sirenix.Serialization.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
@@ -55,24 +61,24 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="Unity.ResourceManager">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Unity.ResourceManager.dll</HintPath>
-        <Private>false</Private>
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\Unity.ResourceManager.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Unity.TextMeshPro.dll</HintPath>
-        <Private>false</Private>
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(GamePath)\Sun Haven_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="ZeroFormatter">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\ZeroFormatter.dll</HintPath>
-        <Private>false</Private>
-    </Reference>        
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\ZeroFormatter.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="ZeroFormatter">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\ZeroFormatter.Interfaces.dll</HintPath>
-        <Private>false</Private>
-    </Reference> 
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\ZeroFormatter.Interfaces.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(GamePath)\Sun Haven_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
@@ -89,37 +95,38 @@
       only require rebuilding (no re-running a CLI on copied DLLs).
     -->
     <Reference Include="SunHaven.Core" Publicize="true">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\SunHaven.Core.dll</HintPath>
-        <Private>false</Private>
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\SunHaven.Core.dll</HintPath>
+      <Private>false</Private>
     </Reference>
-    <!-- Reference Include name is "PSS"; the assembly file is PSS.Database.dll (see Publicize below). -->
+    <!-- Reference Include name is "PSS"; the assembly file is PSS.Database.dll (see Publicize
+    below). -->
     <Reference Include="PSS" Publicize="true">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\PSS.Database.dll</HintPath>
-        <Private>false</Private>
-    </Reference>   
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\PSS.Database.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="DOVirtual">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\DOTween.dll</HintPath>
-        <Private>false</Private>
-    </Reference>        
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\DOTween.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Mirror">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\Mirror.dll</HintPath>
-        <Private>false</Private>
-    </Reference>        
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\Mirror.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="System.Core">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\System.Core.dll</HintPath>
-        <Private>false</Private>
-    </Reference>        
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\System.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="SteamWorks">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
-        <Private>false</Private>
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="I2.Loc">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\I2Localization.dll</HintPath>
-        <Private>false</Private>
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\I2Localization.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="QFSW.QC">
-        <HintPath>$(GamePath)\Sun Haven_Data\Managed\QFSW.QC.dll</HintPath>
-        <Private>false</Private>
+      <HintPath>$(GamePath)\Sun Haven_Data\Managed\QFSW.QC.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <!--
       Publicize Include must match the DLL file name (without .extension), not Reference Include.
@@ -141,9 +148,50 @@
     <PackageReference Include="UnityEngine.Modules" Version="2019.3.15" IncludeAssets="compile" />
   </ItemGroup>
 
-   <ItemGroup>
-     <None Update="data\**\*">
-       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-     </None>
-   </ItemGroup>
+  <ItemGroup>
+    <None Update="data\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
+  <!-- Custom BepInEx Auto-Deployment Pipeline -->
+  <Target Name="DeployModToGame" AfterTargets="Build"
+    Condition="'$(AssemblyName)' != 'Shared' ">
+
+    <PropertyGroup>
+      <!-- Dynamically creates a unique folder inside plugins named after the Mod (e.g.,
+      UnifiedTotems or CustomRecipes) -->
+      <ModPluginsDir>$(GamePath)\BepInEx\plugins\$(AssemblyName)</ModPluginsDir>
+    </PropertyGroup>
+
+    <!-- 2. Define isolated asset collections to prevent copying external assemblies or symbols -->
+    <ItemGroup>
+      <!-- Explicitly target ONLY your mod's binary -->
+      <ModAssembly Include="$(TargetDir)$(TargetName).dll" />
+
+      <!-- Recursively scan and preserve structural layout of your custom data folder -->
+      <DataFolderFiles Include="$(TargetDir)data\**\*.*" />
+    </ItemGroup>
+
+    <!-- 3. Execute targeted directory initialization -->
+    <MakeDir Directories="$(ModPluginsDir)" />
+    <MakeDir Directories="$(ModPluginsDir)\data" />
+
+    <!-- 4. Deploy the primary mod assembly (.dll only) -->
+    <Copy SourceFiles="@(ModAssembly)"
+      DestinationFolder="$(ModPluginsDir)"
+      SkipUnchangedFiles="true"
+      ContinueOnError="false" />
+
+    <!-- 5. Deploy data assets and cleanly map sub-directory tree structures using RecursiveDir
+    metadata -->
+    <Copy SourceFiles="@(DataFolderFiles)"
+      DestinationFolder="$(ModPluginsDir)\data\%(RecursiveDir)"
+      SkipUnchangedFiles="true"
+      ContinueOnError="false" />
+
+    <Message Importance="high"
+      Text="[$(AssemblyName)] Isolated deployment completed successfully directly into: $(ModPluginsDir)" />
+  </Target>
 </Project>

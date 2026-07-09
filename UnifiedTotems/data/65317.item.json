@@ -1,0 +1,16 @@
+{
+	"id": 65317,
+	"name": "Harvest Essence",
+	"description": "Essence containing a bit of bountiful life, morning dew, and prosperous energy.",
+	"helpDescription": "Used to craft magical totems.",
+	"useDescription": "",
+	"stackSize": 999,
+	"canSell": true,
+	"canTrade": true,
+	"canTrash": true,
+	"goldSellPrice": 100,
+	"orbsSellPrice": 0,
+	"ticketSellPrice": 0,
+	"category": 3,
+	"rarity": 1
+}

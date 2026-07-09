@@ -1,0 +1,16 @@
+{
+	"id": 65318,
+	"name": "Experience Essence",
+	"description": "Essence containing a bit of residual energy of grand adventures.",
+	"helpDescription": "Used to craft magical totems.",
+	"useDescription": "",
+	"stackSize": 999,
+	"canSell": true,
+	"canTrade": true,
+	"canTrash": true,
+	"goldSellPrice": 100,
+	"orbsSellPrice": 0,
+	"ticketSellPrice": 0,
+	"category": 3,
+	"rarity": 1
+}

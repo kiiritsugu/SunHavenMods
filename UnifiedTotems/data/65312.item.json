@@ -8,10 +8,10 @@
 	"canSell": true,
 	"canTrade": true,
 	"canTrash": true,
-	"goldSellPrice": 300,
+	"goldSellPrice": 4800,
 	"orbsSellPrice": 0,
 	"ticketSellPrice": 0,
-	"category": 2,
+	"category": 4,
 	"rarity": 1,
 	"recipes": [
 		{
