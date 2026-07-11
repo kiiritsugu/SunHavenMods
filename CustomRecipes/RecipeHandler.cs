@@ -20,7 +20,6 @@ public static class RecipeHandler
     public static void LoadAllCustomRecipes()
     {
         List<string> files = FileScanner.FindFiles("*.recipe.json");
-        Plugin.logger.LogInfo($"Processing {files.Count} custom recipe files using Shared.JsonParser...");
 
         foreach (string file in files)
         {
@@ -100,7 +99,6 @@ public static class RecipeHandler
                     }
 
                     RecipeRegistry.NewRecipes[tableKey].Add(recipe);
-                    Plugin.logger.LogInfo($"Successfully registered custom recipe for item {recipe.outputId} -> {tableKey}");
                 }
 
             }

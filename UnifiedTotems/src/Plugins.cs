@@ -1,11 +1,7 @@
 using System;
-
 using BepInEx;
 using BepInEx.Logging;
-
 using HarmonyLib;
-
-using PSS;
 using Wish;
 
 namespace UnifiedTotems;
@@ -14,12 +10,11 @@ namespace UnifiedTotems;
 [BepInDependency("CustomItems", "0.2.2")]
 public class Plugin : BaseUnityPlugin
 {
-    private Harmony harmony = new(Plugin.PLUGIN_GUID);
+    private Harmony harmony = new Harmony(PLUGIN_GUID);
     public static ManualLogSource logger;
-
     public const string PLUGIN_GUID = "com.kiiritsugu.sunhaven.unifiedtotems";
     public const string PLUGIN_NAME = "Unified Totems";
-    public const string PLUGIN_VERSION = "0.1.1";
+    public const string PLUGIN_VERSION = "1.0.0";
 
     private void Awake()
     {
@@ -57,7 +52,7 @@ public class Plugin : BaseUnityPlugin
 
             try
             {
-                ItemHandler.PatchCropColliders();
+                ItemHandler.AdjustCropColliders();
             }
             catch (Exception err)
             {

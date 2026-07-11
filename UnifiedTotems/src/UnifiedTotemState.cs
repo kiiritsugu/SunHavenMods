@@ -1,14 +1,11 @@
 using System.Collections.Generic;
 using Wish;
-using UnityEngine;
 
 namespace UnifiedTotems;
 
-/// <summary>
-/// Shared state built at runtime by ItemHandler (phase 2 after CustomItems).
-/// </summary>
 public static class UnifiedTotemState
 {
+    // for tracking the state of totem configuration
     public static bool IsConfigured { get; set; }
 
     /// Empty effect for vanilla behaviour, combined effect list comes from TotemIndex
@@ -17,5 +14,6 @@ public static class UnifiedTotemState
     /// <summary>Scarecrow tile radius ( taken from the largest vanilla source totem ).</summary>
     public static int Range { get; set; } = 5;
 
-    public static int CropCapacity { get; set; } = 1;
+    // effect unclear, either number of a same effect that can be applied to a single tile, number of crops that the scarecrow can affect, if the first this takes no effect since i'm stoping two of the same effect from being applied
+    public static int CropCapacity { get; set; } = 120;
 }

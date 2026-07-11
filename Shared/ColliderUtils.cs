@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Wish;
 
-namespace UnifiedTotems;
-public static class Utilitaries
+namespace Shared;
+public static class ColliderUtils
 {
     private const float ISOMETRIC_Y_FACTOR = 1.4142135f;
 
@@ -15,7 +15,7 @@ public static class Utilitaries
     /// </summary>
     /// <param name="scarecrow">The base component you want to reconfigure.</param>
     /// <param name="trigger">Indicates whether the collider should be a trigger.</param>
-    public static void TilePerfectBoxColider2D (Component  component, bool trigger)
+    public static void TileAccurateBoxColider2D (Component  component, bool trigger)
     {
         // Delete any existing BoxCollider2D components to avoid conflicts
         BoxCollider2D[] existingColliders = component.GetComponents<BoxCollider2D>();

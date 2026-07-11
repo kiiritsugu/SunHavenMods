@@ -44,7 +44,6 @@ public class UnifiedTotem : MonoBehaviour
         if (TotemIndex.TotemDictionary.TryGetValue(totemID, out ScareCrowEffect[] combinedEffects))
         {
           CombinedEffects = new List<ScareCrowEffect>(combinedEffects);
-          //Plugin.logger.LogInfo($"UnifiedTotem OnEnable: {decoration.name} received effects: {string.Join(", ", CombinedEffects)}");
           initialized = true;
         }
         else

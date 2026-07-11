@@ -2,7 +2,7 @@ using System;
 using HarmonyLib;
 using Wish;
 
-namespace CustomRecipes.Patches;
+namespace CustomRecipes;
 
 [HarmonyPatch(typeof(CraftingTable))]
 public static class CraftingTablePatch
