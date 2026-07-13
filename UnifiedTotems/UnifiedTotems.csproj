@@ -10,5 +10,12 @@
     <EmbeddedResource Include="img\*.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="CustomItems">
+      <HintPath>$(GamePath)\BepInEx\plugins\CustomItems\CustomItems.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
   <Import Project="..\solution.targets" />
 </Project>

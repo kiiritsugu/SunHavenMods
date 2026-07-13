@@ -26,38 +26,24 @@ public class Plugin : BaseUnityPlugin
     [HarmonyPatch]
     public static class Patches
     {
-        // CustomItems registers JSON items on MainMenuController.Start; PlayGame runs after that.
-        // Phase 1 = CustomItems adds ItemData to Database. Phase 2 = ItemHandler edits behavior.
+        // Adjust vanilla totems and crop colliders as early as possible.
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(MainMenuController), "PlayGame", new Type[] {})]
-        public static void MainMenuControllerPlayGame()
+        [HarmonyPatch(typeof(MainMenuController), "Start")]
+        public static void InitializeVanillaAdjustments()
         {
-            try
-            {
-                ItemHandler.CreateTotems();
-            }
-            catch (Exception err)
-            {
-                logger.LogError($"Error occurred while creating totems: {err}");
-            }
+            Plugin.logger.LogInfo("UnifiedTotems: Adjusting vanilla totems and crop colliders...");
+            
+            try { ItemHandler.AdjustVanillaTotems(); } catch (Exception e) { logger.LogError($"Error patching vanilla totems: {e}"); }
+            try { ItemHandler.AdjustCropColliders(); } catch (Exception e) { logger.LogError($"Error patching crop colliders: {e}"); }
+        }
 
-            try
-            {
-                ItemHandler.AdjustVanillaTotems();
-            }
-            catch (Exception err)
-            {
-                logger.LogError($"Error occurred while adjusting vanilla totems: {err}");
-            }
-
-            try
-            {
-                ItemHandler.AdjustCropColliders();
-            }
-            catch (Exception err)
-            {
-                logger.LogError($"Error occurred while patching crop colliders: {err}");
-            }
+        // CreateTotems depends on CustomItems injection, so it hooks into their event.
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CustomItems.CustomItems), nameof(CustomItems.CustomItems.AddItems))]
+        public static void AfterCustomItemsAdded()
+        {
+            Plugin.logger.LogInfo("UnifiedTotems: CustomItems initialized. Starting custom totem configuration.");
+            try { ItemHandler.CreateTotems(); } catch (Exception err) { logger.LogError($"Error creating custom totems: {err}"); }
         }
     }
 }

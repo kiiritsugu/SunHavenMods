@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -123,50 +124,25 @@ public static class ItemHandler
                     return;
                 }
 
-
                 ColliderUtils.TileAccurateBoxColider2D(scarecrow, false);
             });
         }
     }
 
-    // Adjusts colliders for all crops in the Database cache
     public static void AdjustCropColliders()
     {
-        try
+        ItemInfoDatabase cropDatabase = ItemInfoDatabase.Instance;
+        if (cropDatabase == null || cropDatabase.cropInfos == null) return;
+
+        foreach (int cropId in cropDatabase.cropInfos.Keys)
         {
-            Database db = Database.Instance;
-            if (db == null) return;
-
-            // Direct, publicized access to the cache! 
-            // It maps: Dictionary<Type, Dictionary<object, LinkedListNode<CacheItem>>>
-            HashSet<int> validIDs = db.validIDs;
-
-            if (validIDs == null || validIDs.Count == 0)
+            Database.GetData<ItemData>(cropId, itemData =>
             {
-                Plugin.logger.LogWarning("[TotemMod] Database validIDs is empty or null.");
-                return;
-            }
+                if (itemData == null) return;
+                if (itemData.useItem is not Seeds seed || seed._crop is not Crop crop) return;
 
-            int dynamicCropCount = 0;
-
-            foreach (int id in validIDs)
-            {
-                Database.GetData<ItemData>(id, itemData =>
-                {
-                    if (itemData == null) return;
-
-                    if (itemData.useItem is not Seeds seed || seed._crop is not Crop crop) return;
-
-                    ColliderUtils.TileAccurateBoxColider2D(crop, true);
-                    dynamicCropCount++;
-                });
-            }
-
-            Plugin.logger.LogInfo($"[UnifiedTotems] Traversed in-memory cache and successfully injected colliders into {dynamicCropCount} Seed -> Crop prefabs.");
-        }
-        catch (Exception ex)
-        {
-            Plugin.logger.LogError($"Error occurred while patching crop colliders: {ex}");
+                ColliderUtils.TileAccurateBoxColider2D(crop, false);
+            });
         }
     }
 
