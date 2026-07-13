@@ -157,7 +157,7 @@
 
   <!-- Custom BepInEx Auto-Deployment Pipeline -->
   <Target Name="DeployModToGame" AfterTargets="Build"
-    Condition="'$(AssemblyName)' != 'Shared' ">
+    Condition="'$(AssemblyName)' != 'Shared' and '$(SkipDeployment)' != 'true'">
 
     <PropertyGroup>
       <!-- Dynamically creates a unique folder inside plugins named after the Mod (e.g.,
@@ -171,25 +171,36 @@
       <ModAssembly Include="$(TargetDir)$(TargetName).dll" />
 
       <!-- Recursively scan and preserve structural layout of your custom data folder -->
-      <DataFolderFiles Include="$(TargetDir)data\**\*.*" />
+      <DataFolderFiles Include="$(ProjectDir)data\**\*.*" Exclude="$(ProjectDir)data\**\*.recipe.json" />
+      
+      <!-- Scan project root for recipes -->
+      <RecipeFiles Include="$(ProjectDir)**\*.recipe.json" Exclude="$(ProjectDir)bin\**\*;$(ProjectDir)obj\**\*" />
     </ItemGroup>
 
     <!-- 3. Execute targeted directory initialization -->
     <MakeDir Directories="$(ModPluginsDir)" />
-    <MakeDir Directories="$(ModPluginsDir)\data" />
+    <MakeDir Directories="$(ModPluginsDir)\data" Condition="@(DataFolderFiles->Count()) > 0" />
 
     <!-- 4. Deploy the primary mod assembly (.dll only) -->
     <Copy SourceFiles="@(ModAssembly)"
       DestinationFolder="$(ModPluginsDir)"
       SkipUnchangedFiles="true"
-      ContinueOnError="false" />
+      ContinueOnError="false" 
+      Condition="'$(DeployOnlyAssets)' != 'true' and Exists('@(ModAssembly)')" />
 
-    <!-- 5. Deploy data assets and cleanly map sub-directory tree structures using RecursiveDir
-    metadata -->
+    <!-- 5. Deploy data assets -->
     <Copy SourceFiles="@(DataFolderFiles)"
       DestinationFolder="$(ModPluginsDir)\data\%(RecursiveDir)"
       SkipUnchangedFiles="true"
-      ContinueOnError="false" />
+      ContinueOnError="false"
+      Condition="@(DataFolderFiles->Count()) > 0" />
+
+    <!-- Deploy recipe files, preserving project subfolder structure -->
+    <Copy SourceFiles="@(RecipeFiles)"
+      DestinationFolder="$(ModPluginsDir)\%(RecursiveDir)"
+      SkipUnchangedFiles="true"
+      ContinueOnError="false"
+      Condition="@(RecipeFiles->Count()) > 0" />
 
     <Message Importance="high"
       Text="[$(AssemblyName)] Isolated deployment completed successfully directly into: $(ModPluginsDir)" />

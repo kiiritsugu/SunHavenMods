@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+      <AssemblyName>CrystalOrchard</AssemblyName>
+      <Description>Adds new recipes to craft crystals from elemental fruits</Description>
+      <Version>1.0.0</Version>
+      <DisableImplicitFrameworkDefines>true</DisableImplicitFrameworkDefines>
+      <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+      <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
+      <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
+      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <SkipDeployment>false</SkipDeployment>
+      <DeployOnlyAssets>true</DeployOnlyAssets>
+    </PropertyGroup>
+    <Import Project="..\solution.targets" />
+  </Project>
