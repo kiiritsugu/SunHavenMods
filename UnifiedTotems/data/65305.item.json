@@ -1,0 +1,33 @@
+{
+	"id": 65305,
+	"type": "decoration",
+	"name": "Enhanced Harvest Totem",
+	"description": "A powerful totem with a Harvest Gem and a Glorite Jewel embedded in it. Holds several blessings.",
+	"helpDescription": "All crops in the same farm grant 2 extra farming experience per harvest, grant 2 gold every day, collected on harvest, grow 15% faster and have 20% chance to stay watered overnight.",
+	"useDescription": "(Left click to place)",
+	"stackSize": 999,
+	"canSell": true,
+	"canTrade": true,
+	"canTrash": true,
+	"goldSellPrice": 1500,
+	"orbsSellPrice": 0,
+	"ticketSellPrice": 0,
+	"category": 4,
+	"rarity": 3,
+	"decoration": {
+		"size": [6, 6],
+		"placeableOnTables": false,
+		"placeableOnWalls": false,
+		"placeableAsRug": false
+	},
+	"recipes": [
+		{
+			"list": "RecipeList_Farmer's Table",
+			"hours": 2,
+			"inputs": [
+				{"id": 65301, "amount": 1},
+				{"id": 65312, "amount": 1}
+			]
+		}
+	]
+}

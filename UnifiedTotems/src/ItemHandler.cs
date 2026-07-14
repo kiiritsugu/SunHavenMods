@@ -51,7 +51,7 @@ public static class ItemHandler
         }
 
         //Add the scarecrow range preview mimicking vanilla totem
-        CreateRangePreview(data, UnifiedTotemState.Range);
+        if (!data.name.Contains("Enhanced")) CreateRangePreview(data, UnifiedTotemState.Range);
 
         // Convert the decoration to a Scarecrow component, copying over all relevant fields and properties.
         Decoration baseDecoration = placeable._decoration;

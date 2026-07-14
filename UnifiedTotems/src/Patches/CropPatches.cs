@@ -19,6 +19,9 @@ public static class CropPatch
 
     try
     {
+      //Apply effects from enhanced totems
+      TotemHandler.ApplyActiveEnhancedTotemEffects(__instance);
+
       // Use the utility method to perform a box cast and apply effects for each unique Scarecrow found
       ColliderUtils.BoxCastHitsOnTypeAction<Scarecrow>(__instance.RealCenter, UnifiedTotemState.Range, scarecrow =>
       {

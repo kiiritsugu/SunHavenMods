@@ -1,0 +1,33 @@
+{
+	"id": 65306,
+	"type": "decoration",
+	"name": "Enahnced Experience Totem",
+	"description": "A powerful totem with a Experience Gem and a Glorite Jewel embedded in it. Holds several blessings.",
+	"helpDescription": "All crops in the same farm grant 2 Exploration, Mining, Combat and Fishing experience.",
+	"useDescription": "(Left click to place)",
+	"stackSize": 999,
+	"canSell": true,
+	"canTrade": true,
+	"canTrash": true,
+	"goldSellPrice": 1500,
+	"orbsSellPrice": 0,
+	"ticketSellPrice": 0,
+	"category": 4,
+	"rarity": 3,
+	"decoration": {
+		"size": [6, 6],
+		"placeableOnTables": false,
+		"placeableOnWalls": false,
+		"placeableAsRug": false
+	},
+	"recipes": [
+		{
+			"list": "RecipeList_Farmer's Table",
+			"hours": 2,
+			"inputs": [
+				{"id": 65302, "amount": 1},
+				{"id": 65312, "amount": 1}
+			]
+		}
+	]
+}

@@ -1,0 +1,33 @@
+{
+	"id": 65308,
+	"type": "decoration",
+	"name": "Enhanced Atlas Totem",
+	"description": "A powerful totem with a Atlas Gem and a Glorite Jewel embedded in it. Holds several blessings.",
+	"helpDescription": "Crops from all regions can be planted within the same farm.",
+	"useDescription": "(Left click to place)",
+	"stackSize": 999,
+	"canSell": true,
+	"canTrade": true,
+	"canTrash": true,
+	"goldSellPrice": 1500,
+	"orbsSellPrice": 0,
+	"ticketSellPrice": 0,
+	"category": 4,
+	"rarity": 3,
+	"decoration": {
+		"size": [6, 6],
+		"placeableOnTables": false,
+		"placeableOnWalls": false,
+		"placeableAsRug": false
+	},
+	"recipes": [
+		{
+			"list": "RecipeList_Farmer's Table",
+			"hours": 2,
+			"inputs": [
+				{"id": 65304, "amount": 1},
+				{"id": 65312, "amount": 1}
+			]
+		}
+	]
+}

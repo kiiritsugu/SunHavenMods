@@ -1,8 +1,14 @@
 using System;
+using System.Collections;
+using System.ComponentModel;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 using Wish;
+
+using Shared;
 
 namespace UnifiedTotems;
 
@@ -16,11 +22,15 @@ public class Plugin : BaseUnityPlugin
     public const string PLUGIN_NAME = "Unified Totems";
     public const string PLUGIN_VERSION = "1.0.0";
 
+    public static Plugin Instance { get; private set; }
+
     private void Awake()
     {
         logger = Logger;
         harmony.PatchAll();
         Logger.LogInfo($"Plugin {PLUGIN_GUID} is active.");
+
+        Instance = this;
     }
 
     [HarmonyPatch]
@@ -44,6 +54,19 @@ public class Plugin : BaseUnityPlugin
         {
             Plugin.logger.LogInfo("UnifiedTotems: CustomItems initialized. Starting custom totem configuration.");
             try { ItemHandler.CreateTotems(); } catch (Exception err) { logger.LogError($"Error creating custom totems: {err}"); }
+        }
+
+        private static bool _isonFinishLoadingDecorationsSubscribed = false;
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(ScenePortalManager), "Awake")]
+        public static void CheckEnhancedTotems()
+        {
+            if(_isonFinishLoadingDecorationsSubscribed) return;
+
+            ScenePortalManager.onFinishLoadingDecorations += () => TotemHandler.EvaluateEnhancedTotemsInScene();
+
+            _isonFinishLoadingDecorationsSubscribed = true;
         }
     }
 }

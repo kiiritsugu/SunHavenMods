@@ -5,6 +5,14 @@ namespace UnifiedTotems;
 
 public static class UnifiedTotemState
 {
+    public static Dictionary<int, bool> ActiveEnhancedTotems = new Dictionary<int, bool>
+    {
+        { TotemIndex.EnhancedHarvestTotemId, false },
+        { TotemIndex.EnhancedExperienceTotemId, false },
+        { TotemIndex.EnhancedFourSeasonsTotemId, false },
+        { TotemIndex.EnhancedAtlasTotemId, false }
+    };
+    
     // for tracking the state of totem configuration
     public static bool IsConfigured { get; set; }
 

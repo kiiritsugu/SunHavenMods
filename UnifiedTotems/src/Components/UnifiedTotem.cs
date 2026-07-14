@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using Wish;
 
@@ -7,6 +8,7 @@ namespace UnifiedTotems;
 public class UnifiedTotem : MonoBehaviour
 {
   public List<ScareCrowEffect> CombinedEffects { get; set; } = new List<ScareCrowEffect>();
+  public bool gloriteEnhanced = false;
   public bool initialized = false;
 
     private void OnEnable()
@@ -44,6 +46,14 @@ public class UnifiedTotem : MonoBehaviour
         if (TotemIndex.TotemDictionary.TryGetValue(totemID, out ScareCrowEffect[] combinedEffects))
         {
           CombinedEffects = new List<ScareCrowEffect>(combinedEffects);
+          
+          if(
+            totemID == TotemIndex.EnhancedHarvestTotemId || 
+            totemID == TotemIndex.EnhancedExperienceTotemId ||
+            totemID == TotemIndex.EnhancedFourSeasonsTotemId ||
+            totemID == TotemIndex.EnhancedAtlasTotemId
+          ) gloriteEnhanced = true;
+
           initialized = true;
         }
         else

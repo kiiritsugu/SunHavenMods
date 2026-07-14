@@ -2,9 +2,14 @@ using System;
 using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Wish;
 
 using Shared;
+using JetBrains.Annotations;
+using System.Linq;
+using System.Data;
+using UnityEngine.UIElements;
 
 namespace UnifiedTotems;
 
@@ -75,9 +80,25 @@ public static class TotemHandler
       effectsToRemove.Add(removedTotem.scareCrowEffect);
     }
 
-    //Perform a box-cast to aggregate all effects provided by other nearby totems
+    // List for effects provided by other totems
     HashSet<ScareCrowEffect> effectsProvidedByOthers = new HashSet<ScareCrowEffect>();
 
+    // Aggregate effects from active enhanced totems
+    foreach (KeyValuePair<int, bool> pair in UnifiedTotemState.ActiveEnhancedTotems)
+    {
+      if (pair.Value == true)
+      {
+        if (TotemIndex.TotemDictionary.TryGetValue(pair.Key, out ScareCrowEffect[] effects))
+        {
+          foreach (ScareCrowEffect effect in effects)
+          {
+            effectsProvidedByOthers.Add(effect);
+          }
+        }
+      }
+    }
+
+    //Perform a box-cast to aggregate all effects provided by other nearby totems
     ColliderUtils.BoxCastHitsOnTypeAction<Scarecrow>(crop.RealCenter, 5f, nearbyTotem =>
     {
       if (nearbyTotem == removedTotem) return;
@@ -124,7 +145,7 @@ public static class TotemHandler
       cropsWithRemovedEffects++;
     }
     //Remove later
-    // Plugin.logger.LogInfo($"UnifiedTotems: Finished evaluating and removing effects from Crop. Crop Effects: {string.Join(", ", crop.data.scareCrowEffects)}");
+    Plugin.logger.LogInfo($"UnifiedTotems: Finished evaluating and removing effects from Crop. Crop Effects: {string.Join(", ", crop.data.scareCrowEffects)}");
   }
 
   // Checks if a nearby totem allows crop placement
@@ -136,8 +157,16 @@ public static class TotemHandler
       return false;
     }
 
+    // control variables
     bool placementAllowed = false;
     FarmType requiredFarm = crop.SeedData.farmType;
+
+    //Check if Enhanced Atlas totem is active
+    if(UnifiedTotemState.ActiveEnhancedTotems[TotemIndex.EnhancedAtlasTotemId] == true)
+    {
+      placementAllowed = true;
+      return placementAllowed;
+    }
 
     // Map the seed's required FarmType to its matching vanilla ScareCrowEffect enum value
     ScareCrowEffect targetEffect = requiredFarm switch
@@ -188,4 +217,151 @@ public static class TotemHandler
     return placementAllowed;
   }
 
+  //Checks if Totem is a enhanced totem
+  public static bool CheckIfEnhanced(Scarecrow scarecrow)
+  {
+    UnifiedTotem unifiedTotem = scarecrow.GetComponent<UnifiedTotem>();
+
+    if (unifiedTotem.initialized == false) unifiedTotem.InitializeTotem();
+
+    if (unifiedTotem != null && unifiedTotem.gloriteEnhanced == true) return true;
+
+    return false;
+  }
+
+  //
+  public static void ApplyTotemEffectsToAll(Scarecrow scarecrow)
+  {
+    UnifiedTotem unifiedTotem = scarecrow.GetComponent<UnifiedTotem>();
+
+    if (unifiedTotem == null) return;
+
+    if (unifiedTotem.initialized == false)
+    {
+      unifiedTotem.InitializeTotem();
+    }
+
+    //Remove later
+    int apliedToCrops = 0;
+
+    Crop[] crops = GameObject.FindObjectsOfType<Crop>();
+
+    foreach (Crop crop in crops)
+    {
+      bool metadataChanged = false;
+      if (crop != null && crop.data != null)
+      {
+        if (crop.data.scareCrowEffects == null)
+        {
+          crop.data.scareCrowEffects = new List<ScareCrowEffect>();
+        }
+
+        foreach (ScareCrowEffect effect in unifiedTotem.CombinedEffects)
+        {
+          if (!crop.data.scareCrowEffects.Contains(effect))
+          {
+            crop.data.scareCrowEffects.Add(effect);
+            metadataChanged = true;
+          }
+        }
+
+        if (metadataChanged)
+        {
+          crop.SaveMeta();
+          crop.SendNewMeta(crop.meta);
+
+          Plugin.logger.LogInfo($"[UnifiedTotems] Finished applying to Crop. Crop Effects: {string.Join(", ", crop.data.scareCrowEffects)}");
+        }
+
+        //Remove later
+        apliedToCrops++;
+      }
+    }
+
+    //Remove later
+    Plugin.logger.LogInfo($"Applied {string.Join(", ", unifiedTotem.CombinedEffects)} to {apliedToCrops} crops");
+  }
+
+  // 
+  public static void RemoveTotemEffectsFromAll(Scarecrow scarecrow)
+  {
+    Crop[] crops = GameObject.FindObjectsOfType<Crop>();
+
+    foreach (Crop crop in crops)
+    {
+      EvaluateAndRemoveEffects(scarecrow, crop);
+    }
+
+    //Remove later
+    Plugin.logger.LogInfo($"[UnifiedTotems]Evaluated effect removal from {crops.Length} crops");
+  }
+
+  //
+  public static void EvaluateEnhancedTotemsInScene(UnifiedTotem excludedTotem = null)
+  {
+    string currentScene = ScenePortalManager.ActiveSceneName;
+
+    if (!SceneIndex.farmScenes.Contains(currentScene)) return;
+
+    List<int> enhancedTotemIDs = new List<int>(UnifiedTotemState.ActiveEnhancedTotems.Keys);
+    foreach (int enhancedTotemID in enhancedTotemIDs)
+    {
+      UnifiedTotemState.ActiveEnhancedTotems[enhancedTotemID] = false;
+    }
+
+    UnifiedTotem[] unifiedTotems = GameObject.FindObjectsOfType<UnifiedTotem>();
+
+    foreach (UnifiedTotem unifiedTotem in unifiedTotems)
+    {
+      if (unifiedTotem.gameObject.scene.name != currentScene) continue;
+      if (!unifiedTotem.gameObject.activeInHierarchy) continue;
+      if (excludedTotem != null && unifiedTotem == excludedTotem) continue;
+
+
+      if (!unifiedTotem.initialized) unifiedTotem.InitializeTotem();
+
+      if (unifiedTotem.gloriteEnhanced)
+      {
+        Scarecrow scarecrow = unifiedTotem.GetComponentInParent<Scarecrow>();
+
+        if (scarecrow != null)
+        {
+          UnifiedTotemState.ActiveEnhancedTotems[scarecrow.id] = true;
+          //Remove later
+          Plugin.logger.LogInfo($"[Unified Totems]{scarecrow.name} is active");
+        }
+      }
+    }
+  }
+
+  //
+  public static void ApplyActiveEnhancedTotemEffects(Crop crop)
+  {
+    if(crop == null) return;
+
+    bool metadataChanged = false;
+
+    Dictionary<int,bool> enhancedTotemDictionary = UnifiedTotemState.ActiveEnhancedTotems;
+
+    foreach(int totemID in enhancedTotemDictionary.Keys)
+    {
+      if(enhancedTotemDictionary[totemID] == true)
+      {
+        foreach (ScareCrowEffect effect in TotemIndex.TotemDictionary[totemID])
+        {
+          if (!crop.data.scareCrowEffects.Contains(effect))
+          {
+            crop.data.scareCrowEffects.Add(effect);
+            metadataChanged = true;
+          }
+        }
+      }
+    }
+
+    if(metadataChanged)
+    {
+      crop.SaveMeta();
+      crop.SendNewMeta(crop.meta);
+    }
+  }
 }

@@ -9,6 +9,10 @@ public static class TotemIndex
     public const int ExperienceTotemId = 65302;
     public const int FourSeasonsTotemId = 65303;
     public const int AtlasTotemId = 65304;
+    public const int EnhancedHarvestTotemId = 65305;
+    public const int EnhancedExperienceTotemId = 65306;
+    public const int EnhancedFourSeasonsTotemId = 65307;
+    public const int EnhancedAtlasTotemId = 65308;
 
     public static ScareCrowEffect[] HarvestEffects = new ScareCrowEffect[]
     {
@@ -49,7 +53,11 @@ public static class TotemIndex
         { HarvestTotemId, HarvestEffects },
         { ExperienceTotemId, ExperienceEffects },
         { FourSeasonsTotemId, FourSeasonsEffects },
-        { AtlasTotemId, AtlasEffects }
+        { AtlasTotemId, AtlasEffects },
+        { EnhancedHarvestTotemId, HarvestEffects },
+        { EnhancedExperienceTotemId, ExperienceEffects },
+        { EnhancedFourSeasonsTotemId, FourSeasonsEffects },
+        { EnhancedAtlasTotemId, AtlasEffects }
     };
 
     public static int [] VanillaTotemIds = new int[] { 10696, 10697, 10698, 10699 };
