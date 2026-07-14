@@ -65,7 +65,7 @@ public static class TotemRemovalPatches
     });
 
     //Remove later
-    Plugin.logger.LogInfo($"UnifiedTotems: Finished removing effects for nearby crops. Crops with removed effects: {TotemHandler.cropsWithRemovedEffects}");
+    // Plugin.logger.LogInfo($"UnifiedTotems: Finished removing effects for nearby crops. Crops with removed effects: {TotemHandler.cropsWithRemovedEffects}");
     TotemHandler.cropsWithRemovedEffects = 0; // Reset the counter
 
     return false; // Skip vanilla finicky logic entirely

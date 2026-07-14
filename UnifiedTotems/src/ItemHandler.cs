@@ -141,7 +141,7 @@ public static class ItemHandler
                 if (itemData == null) return;
                 if (itemData.useItem is not Seeds seed || seed._crop is not Crop crop) return;
 
-                ColliderUtils.TileAccurateBoxColider2D(crop, false);
+                ColliderUtils.TileAccurateBoxColider2D(crop, true);
             });
         }
     }

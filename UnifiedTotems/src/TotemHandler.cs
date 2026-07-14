@@ -51,7 +51,7 @@ public static class TotemHandler
       crop.SendNewMeta(crop.meta);
 
       //Remove later
-      Plugin.logger.LogInfo($"UnifiedTotems: Finished applying to Crop. Crop Effects: {string.Join(", ", crop.data.scareCrowEffects)}");
+      // Plugin.logger.LogInfo($"UnifiedTotems: Finished applying to Crop. Crop Effects: {string.Join(", ", crop.data.scareCrowEffects)}");
     }
   }
 
@@ -124,7 +124,7 @@ public static class TotemHandler
       cropsWithRemovedEffects++;
     }
     //Remove later
-    Plugin.logger.LogInfo($"UnifiedTotems: Finished evaluating and removing effects from Crop. Crop Effects: {string.Join(", ", crop.data.scareCrowEffects)}");
+    // Plugin.logger.LogInfo($"UnifiedTotems: Finished evaluating and removing effects from Crop. Crop Effects: {string.Join(", ", crop.data.scareCrowEffects)}");
   }
 
   // Checks if a nearby totem allows crop placement
