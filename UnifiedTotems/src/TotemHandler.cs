@@ -63,13 +63,13 @@ public static class TotemHandler
   // Removes the Unified Totem or Vanilla effects from crop if no nearby totem is providing the same effects
   public static void EvaluateAndRemoveEffects(Scarecrow removedTotem, Crop crop)
   {
-    if (crop == null || crop.data == null || crop.data.scareCrowEffects == null) return;
+    if (crop == null || crop.data == null || crop.data.scareCrowEffects == null|| removedTotem == null) return;
 
     // Determine all individual sub-effects projected by this specific removing totem instance
     List<ScareCrowEffect> effectsToRemove = new List<ScareCrowEffect>();
 
     // Check if it's a unified totem trough the component and if so add the combined effects to removal list
-    UnifiedTotem unifiedTotem = removedTotem.GetComponentInChildren<UnifiedTotem>();
+    UnifiedTotem unifiedTotem = removedTotem.gameObject.GetComponentInChildren<UnifiedTotem>();
     if (unifiedTotem != null)
     {
       effectsToRemove.AddRange(unifiedTotem.CombinedEffects);
@@ -221,10 +221,11 @@ public static class TotemHandler
   public static bool CheckIfEnhanced(Scarecrow scarecrow)
   {
     UnifiedTotem unifiedTotem = scarecrow.GetComponent<UnifiedTotem>();
+    if(unifiedTotem == null) return false;
 
     if (unifiedTotem.initialized == false) unifiedTotem.InitializeTotem();
 
-    if (unifiedTotem != null && unifiedTotem.gloriteEnhanced == true) return true;
+    if (unifiedTotem.gloriteEnhanced == true) return true;
 
     return false;
   }
@@ -241,59 +242,66 @@ public static class TotemHandler
       unifiedTotem.InitializeTotem();
     }
 
-    //Remove later
-    int apliedToCrops = 0;
+    CoroutineRunner.Instance.StartCoroutine(ApplyTotemEffectsToAllCoroutine(unifiedTotem));
+  }
 
+  private static System.Collections.IEnumerator ApplyTotemEffectsToAllCoroutine(UnifiedTotem unifiedTotem)
+  {
     Crop[] crops = GameObject.FindObjectsOfType<Crop>();
+    int batchSize = UnifiedTotemState.BatchSize;
 
-    foreach (Crop crop in crops)
+    for (int i = 0; i < crops.Length; i += batchSize)
     {
-      bool metadataChanged = false;
-      if (crop != null && crop.data != null)
+      for (int j = i; j < Math.Min(i + batchSize, crops.Length); j++)
       {
-        if (crop.data.scareCrowEffects == null)
+        Crop crop = crops[j];
+        bool metadataChanged = false;
+        if (crop != null && crop.data != null)
         {
-          crop.data.scareCrowEffects = new List<ScareCrowEffect>();
-        }
-
-        foreach (ScareCrowEffect effect in unifiedTotem.CombinedEffects)
-        {
-          if (!crop.data.scareCrowEffects.Contains(effect))
+          if (crop.data.scareCrowEffects == null)
           {
-            crop.data.scareCrowEffects.Add(effect);
-            metadataChanged = true;
+            crop.data.scareCrowEffects = new List<ScareCrowEffect>();
+          }
+
+          foreach (ScareCrowEffect effect in unifiedTotem.CombinedEffects)
+          {
+            if (!crop.data.scareCrowEffects.Contains(effect))
+            {
+              crop.data.scareCrowEffects.Add(effect);
+              metadataChanged = true;
+            }
+          }
+
+          if (metadataChanged)
+          {
+            crop.SaveMeta();
+            crop.SendNewMeta(crop.meta);
           }
         }
-
-        if (metadataChanged)
-        {
-          crop.SaveMeta();
-          crop.SendNewMeta(crop.meta);
-
-          Plugin.logger.LogInfo($"[UnifiedTotems] Finished applying to Crop. Crop Effects: {string.Join(", ", crop.data.scareCrowEffects)}");
-        }
-
-        //Remove later
-        apliedToCrops++;
       }
+      yield return null;
     }
-
-    //Remove later
-    Plugin.logger.LogInfo($"Applied {string.Join(", ", unifiedTotem.CombinedEffects)} to {apliedToCrops} crops");
   }
 
   // 
   public static void RemoveTotemEffectsFromAll(Scarecrow scarecrow)
   {
+    CoroutineRunner.Instance.StartCoroutine(RemoveTotemEffectsFromAllCoroutine(scarecrow));
+  }
+
+  private static System.Collections.IEnumerator RemoveTotemEffectsFromAllCoroutine(Scarecrow scarecrow)
+  {
     Crop[] crops = GameObject.FindObjectsOfType<Crop>();
+    int batchSize = UnifiedTotemState.BatchSize;
 
-    foreach (Crop crop in crops)
+    for (int i = 0; i < crops.Length; i += batchSize)
     {
-      EvaluateAndRemoveEffects(scarecrow, crop);
+      for (int j = i; j < Math.Min(i + batchSize, crops.Length); j++)
+      {
+        EvaluateAndRemoveEffects(scarecrow, crops[j]);
+      }
+      yield return null;
     }
-
-    //Remove later
-    Plugin.logger.LogInfo($"[UnifiedTotems]Evaluated effect removal from {crops.Length} crops");
   }
 
   //

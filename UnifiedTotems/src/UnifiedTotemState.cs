@@ -24,4 +24,6 @@ public static class UnifiedTotemState
 
     // effect unclear, either number of a same effect that can be applied to a single tile, number of crops that the scarecrow can affect, if the first this takes no effect since i'm stoping two of the same effect from being applied
     public static int CropCapacity { get; set; } = 120;
+
+    public static int BatchSize { get; set; } = 10;
 }
