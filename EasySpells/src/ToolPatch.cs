@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
-using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Text;
 using UnityEngine;
 using Wish;
 
@@ -14,18 +12,26 @@ public static class ToolPatch
     [HarmonyPatch("Use1"), HarmonyPrefix]
     public static bool Use1_Prefix(Tool __instance)
     {
-        Vector2Int pos = Traverse.Create(__instance).Field<Vector2Int>("pos").Value;
+        var posField = Traverse.Create(__instance).Field<Vector2Int>("pos");
+        if (posField == null) return true; // Safety check
+        
+        Vector2Int pos = posField.Value;
+        
         if (__instance is Hoe &&
             Plugin.modEnabled.Value &&
             Plugin.remoteKey.Value.IsPressed() &&
             Plugin.earthqueakeSpell != null)
         {
+            // Verify if the player has the required spell level
             if (GameSave.Farming.GetNodeAmount("Farming5a", 3, true) > 0)
             {
                 Plugin.earthqueakePos = pos;
+                // Try to use the earthquake spell
                 Plugin.earthqueakeSpell.UseDown1();
+                
+                // Return false to cancel vanilla behavior
+                return false; 
             }
-            return false;
         }
         return true;
     }
@@ -65,4 +71,3 @@ public static class ToolPatch
         _ = Transpiler(null);
     }
 }
-
