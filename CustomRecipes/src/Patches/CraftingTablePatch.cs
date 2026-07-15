@@ -13,12 +13,14 @@ public static class CraftingTablePatch
     {
         try
         {
+            if (__instance == null) return;
+            
             // Inject custom recipes into the crafting table after its Awake() method has completed
             RecipeHandler.AddRecipesToTable(__instance);
         }
         catch (Exception e)
         {
-            Plugin.logger.LogError($"[CraftingTablePatch] Error trying to inject recipe: {e}");
+             Plugin.logger.LogError($"[CraftingTablePatch] Error trying to inject recipe: {e}");
         }
     }
 }

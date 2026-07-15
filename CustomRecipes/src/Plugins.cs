@@ -12,7 +12,7 @@ public class Plugin : BaseUnityPlugin
     public static ManualLogSource logger;
     public const string PLUGIN_GUID = "com.kiiritsugu.customrecipes";
     public const string PLUGIN_NAME = "Custom Recipes Injector";
-    public const string PLUGIN_VERSION = "1.0.0";
+    public const string PLUGIN_VERSION = "1.0.1";
 
     private void Awake()
     {

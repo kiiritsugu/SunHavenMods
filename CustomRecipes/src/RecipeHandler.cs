@@ -118,7 +118,7 @@ public static class RecipeHandler
         if (table == null) return;
 
         var recipeList = Traverse.Create(table).Field("recipeList").GetValue<RecipeList>();
-        if (recipeList == null) return;
+        if (recipeList == null || recipeList.craftingRecipes == null) return;
 
         string tableKey = StringUtils.RemoveWhiteSpace(recipeList.name);
 
@@ -129,8 +129,12 @@ public static class RecipeHandler
 
         foreach (var entry in RecipeRegistry.NewRecipes[tableKey])
         {
+            // Safety check: ensure r.output2 is not null before accessing its id
             bool recipeExists = recipeList.craftingRecipes.Any(r =>
+                r != null &&
+                r.output2 != null &&
                 r.output2.id == entry.outputId &&
+                r.input2 != null &&
                 r.input2.Count == entry.inputs.Count &&
                 entry.inputs.All(input => r.input2.Any(ri => ri.id == input.id && ri.amount == (input.amount == 0 ? 1 : input.amount)))
             );
