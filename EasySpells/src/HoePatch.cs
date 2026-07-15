@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using UnityEngine;
 using Wish;
@@ -26,24 +27,26 @@ public static class HoePatch
                 code[i].opcode = OpCodes.Call;
                 code[i].operand = AccessTools.Method(typeof(HoePatch), nameof(GetHoeRange));
             }
-            // Replace IsFarmableDataTile with MyIsFarmableDataTile
+            // Replace IsFarmableDataTile with MyIsFarmableDataTile using robust name matching
             else if (code[i].opcode == OpCodes.Callvirt &&
-                     code[i].operand != null &&
-                     code[i].OperandIs(AccessTools.Method(typeof(GameManager), nameof(GameManager.IsFarmableDataTile), new[] { typeof(Vector2Int) })))
+                     code[i].operand is MethodInfo methodInfo &&
+                     methodInfo.Name == "IsFarmableDataTile")
             {
+                code[i].opcode = OpCodes.Call;
                 code[i].operand = AccessTools.Method(typeof(HoePatch), nameof(MyIsFarmableDataTile));
             }
-            // Replace IsFarmableDataTileAndNotHoed with MyIsFarmableDataTileAndNotHoed
+            // Replace IsFarmableDataTileAndNotHoed with MyIsFarmableDataTileAndNotHoed using robust name matching
             else if (code[i].opcode == OpCodes.Callvirt &&
-                     code[i].operand != null &&
-                     code[i].OperandIs(AccessTools.Method(typeof(GameManager), nameof(GameManager.IsFarmableDataTileAndNotHoed), new[] { typeof(Vector2Int) })))
+                     code[i].operand is MethodInfo methodInfo2 &&
+                     methodInfo2.Name == "IsFarmableDataTileAndNotHoed")
             {
+                code[i].opcode = OpCodes.Call;
                 code[i].operand = AccessTools.Method(typeof(HoePatch), nameof(MyIsFarmableDataTileAndNotHoed));
             }
-            // Replace SelectCurrentHoeItem with MySelectCurrentHoeItemOLDGCALLOC
+            // Replace SelectCurrentHoeItem with MySelectCurrentHoeItemOLDGCALLOC using robust name matching
             else if ((code[i].opcode == OpCodes.Call || code[i].opcode == OpCodes.Callvirt) &&
-                     code[i].operand != null &&
-                     code[i].OperandIs(AccessTools.Method(typeof(Hoe), "SelectCurrentHoeItem")))
+                     code[i].operand is MethodInfo methodInfo3 &&
+                     methodInfo3.Name == "SelectCurrentHoeItem")
             {
                 code[i].opcode = OpCodes.Call;
                 code[i].operand = AccessTools.Method(typeof(HoePatch), nameof(MySelectCurrentHoeItemOLDGCALLOC));
@@ -99,6 +102,16 @@ public static class HoePatch
             return;
         }
 
+        // Calculate and update hoe.pos and hoe.currentSpot so we target the correct aimed tile!
+        var traverseHoe = Traverse.Create(hoe);
+        var potentialHoeingSpots = traverseHoe.Field<List<Vector2Int>>("potentialHoeingSpots").Value;
+        if (potentialHoeingSpots != null && potentialHoeingSpots.Count > 0)
+        {
+            var currentSpot = traverseHoe.Method("GetCurrentSpot").GetValue<Vector2Int>();
+            traverseHoe.Field<Vector2Int>("currentSpot").Value = currentSpot;
+            traverseHoe.Field<Vector2Int>("pos").Value = currentSpot;
+        }
+
         if (baseSelection != _selection)
         {
             baseSelection = _selection;
@@ -114,7 +127,7 @@ public static class HoePatch
         }
 
         _selection.SetActive(false);
-        var pos = Traverse.Create(hoe).Field<Vector2Int>("pos").Value;
+        var pos = traverseHoe.Field<Vector2Int>("pos").Value;
 
         for (int i = 0; i < selectionList.Count; i++)
         {
@@ -122,27 +135,11 @@ public static class HoePatch
             int y = i / 5 - 2;
             var item = selectionList[i];
             var p = new Vector2Int(pos.x - x, pos.y - y);
-            if (!SingletonBehaviour<TileManager>.Instance.HasTile(p, ScenePortalManager.ActiveSceneIndex) &&
-                (SingletonBehaviour<TileManager>.Instance.IsHoeable(p) || SingletonBehaviour<TileManager>.Instance.IsFarmable(p)))
-            {
-                item.SetActive(true);
-                item.transform.eulerAngles = new Vector3(0f, 0f, 0f);
-                item.transform.localScale = new Vector3(1f, 1.4142135f, 1f);
-                Vector3 vector = new Vector3((float)p.x + 0.5f, ((float)p.y + 0.5f) * 1.4142135f, 0f);
-                float num = SingletonBehaviour<GameManager>.Instance.Depth(vector, false);
-                vector = new Vector3(vector.x, vector.y + num, vector.z + num);
-                item.transform.position = vector + new Vector3(0f, -0.25f, -0.25f);
-                SpriteRenderer component = item.GetComponent<SpriteRenderer>();
-                if (component != null)
-                {
-                    component.size = Vector2.one * 1.25f;
-                }
-                item.transform.position += new Vector3(0f, 0.001f * i, 0.001f * i);
-            }
-            else
-            {
-                item.SetActive(false);
-            }
+            
+            item.SetActive(true);
+            ToolPatch.MySetSelectionOnTileBody(new ToolPatch.MySetSelectionOnTileBodyArg { _selection = item, transform = hoe.transform }, p);
+            item.transform.localScale = new Vector3(1f, 1.4142135f, 1f);
+            item.gameObject.transform.position += new Vector3(0f, 0.001f * i, 0.001f * i);
         }
     }
 

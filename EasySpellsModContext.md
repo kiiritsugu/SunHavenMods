@@ -1,41 +1,48 @@
 # EasySpells Mod Context Summary
 
 ## Overview
-This file summarizes the project context for the `EasySpells` mod, documenting the transition from `RemoteEarthquakeAndRainCloud`, known issues, and planned fixes for spellcasting functionality after game updates.
+This file summarizes the project context for the `EasySpells` mod, documenting the transition from `RemoteEarthquakeAndRainCloud`, known issues, architectural changes, and plans for resolving spellcasting indicators in Sun Haven 3.1.
 
 ## Game Source Code (Decompiled)
-- **Path:** `decompiled-game-src/`
-- **Purpose:** Used for cross-referencing game code with mod patches.
-- **Notes:** Current game version has breaking changes compared to version 3.0.2.
+- **Path:** `3.0-game-src/` and `3.1-game-src/`
+- **Purpose:** Cross-referencing game code with mod patches.
+- **Key 3.1 Changes Identified:**
+  - `Hoe.HandleHoeEachFrame` introduced local variables `min` / `max` for clamps and a capacity list for `potentialHoeingSpots`.
+  - `SelectCurrentHoeItem()` replaced the old `SelectCurrentHoeItemOLDGCALLOC()`.
+  - IL structural updates caused old offset-based transpilers (searching for offsets like `i + 2`) to fail.
 
-## Original Mod Source Code
-- **Path:** `RemoteEarthquakeAndRainCloud/`
-- **Purpose:** Reference implementation used for restoring functionality.
-
-## Summary of Changes from Original Mod
-- Reverted `HoePatch` to the original `HarmonyReversePatch` structure to maintain compatibility.
-- Updated transpilers with explicit null checks to fix `ArgumentNullException` from Harmony version updates.
-- Refactored `MyIsFarmableDataTile` and `MySelectCurrentHoeItemOLDGCALLOC` to explicitly handle mod toggling, restoring vanilla indicator behavior when the mod is inactive.
-- Updated `ToolPatch` to use `Traverse` for safe access to protected/internal game fields.
-- **WateringCan/Rain Cloud Changes:** Applied reverse-patching to `HandleWateringCanEachFrame` and overridden `Use1` to handle game source code changes in tool interaction logic, ensuring compatibility with updated tile-checking and tool-usage patterns in the game source.
-
-## Relevant Game Source Classes
-- `Wish.Hoe`: Patching tool selection and hoeing logic.
-- `Wish.Tool`: Base class for tool interaction and spellcasting execution.
-- `Wish.Player`: Manages active spells and inputs.
-- `Wish.EarthquakeSpell`: Execution logic for the earthquake spell.
-- `Wish.CloudSpell`: Execution logic for the rain cloud spell.
+## summary of Recent Architectural Changes
+To restore 3.1 compatibility robustly, we refactored the mod's architecture:
+1. **Standard `HarmonyTranspiler` on `Hoe.HandleHoeEachFrame`**:
+   - Replaced offset-based matching with direct, robust search-and-replace:
+     - All `ldc.r4 1.5` instructions are replaced with a call to `HoePatch.GetHoeRange()`, which returns `1000.0f` if the remote key is held and `1.5f` otherwise. This successfully allows aiming/casting at a distance.
+     - `IsFarmableDataTile` and `IsFarmableDataTileAndNotHoed` are redirected to custom helpers returning `true` when the key is held.
+     - Calls to `SelectCurrentHoeItem` are replaced with `MySelectCurrentHoeItemOLDGCALLOC(this)`.
+2. **Simplified `EarthQuakeSpellPatch`**:
+   - Replaced the fragile `HarmonyReversePatch` on `SpawnEarthquake` with a standard `HarmonyPrefix` that intercepts `ref Vector2Int position`.
+   - Overrides position to `Plugin.earthqueakePos` when `__instance == Plugin.earthqueakeSpell` and lets original code run. This successfully restores remote earthquake spawning.
+3. **Cleaned up `ToolPatch`**:
+   - Kept `MySetSelectionOnTileBody` reverse-patched only for `WateringCanPatch` backwards compatibility.
 
 ## Current Status
-- **Working:**
-    - Watering Can and Rain Cloud functionality.
-    - Vanilla hoeing behavior when mod key is not held.
-- **Pending/In-Progress:**
-    - Fixing spellcasting (ctrl + hoe) indicators and execution.
-    - Comparing decompiled source with version 3.0.2 to identify underlying API/lifecycle changes.
-    - Testing and verification after fixes.
+- **Working Perfectly**:
+  - Watering Can and Rain Cloud functionality (aiming, remote cloud casting, range indicators).
+  - Vanilla hoeing behavior when mod key is not held.
+  - Remote Earthquake spell casting (Ctrl + Hoe left click aims and spawns the 5x5 earthquake spell anywhere on the farm).
+- **Broken / Remaining Issue**:
+  - **The 5x5 spell range area indicators do NOT appear** when aiming. Only the single center aimed-at tile indicator displays.
+  
+## Diagnosing the Remaining Issue (For Next Context)
+When aiming with Ctrl + Hoe, the range clamp successfully expands, and casting remote earthquake works. However, only the central target indicator is displayed. This implies one of two possibilities:
+1. **Transpiler Call Replacement Failure**:
+   - The transpiler might have failed to replace `SelectCurrentHoeItem` call with `MySelectCurrentHoeItemOLDGCALLOC(this)` in `HandleHoeEachFrame` (e.g. if compiler called it virtually or used a different signature), causing the vanilla `SelectCurrentHoeItem` (which only shows 1 tile) to run instead.
+2. **Indicator Instantiation / Rendering Failure**:
+   - `MySelectCurrentHoeItemOLDGCALLOC` successfully executes, but the other 24 indicators in `selectionList` are being deactivated, positioned incorrectly (overlapping/Z-fighting), or hidden under the ground.
 
-## Next Steps
-- Decompile classes (`Hoe`, `Tool`, `EarthquakeSpell`) from version 3.0.2.
-- Compare with current 3.1.2 source to find breaking API or MonoBehaviour lifecycle changes.
-- Apply identified fixes to `ToolPatch` and `EarthQuakeSpellPatch`.
+## Next Steps for the Task
+1. Verify if `MySelectCurrentHoeItemOLDGCALLOC` is actually being called (inject simple debug logs or file-write logging on execution).
+2. If it is NOT executing, inspect the transpiler IL replacement for `SelectCurrentHoeItem`.
+3. If it IS executing, debug the indicator list rendering loop:
+   - Check if coordinates are correctly offset.
+   - Investigate why only the center `item` is visible.
+   - Inspect layer, parent, and visibility properties of cloned selection objects.
