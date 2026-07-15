@@ -136,10 +136,18 @@ public static class HoePatch
             var item = selectionList[i];
             var p = new Vector2Int(pos.x - x, pos.y - y);
             
-            item.SetActive(true);
-            ToolPatch.MySetSelectionOnTileBody(new ToolPatch.MySetSelectionOnTileBodyArg { _selection = item, transform = hoe.transform }, p);
-            item.transform.localScale = new Vector3(1f, 1.4142135f, 1f);
-            item.gameObject.transform.position += new Vector3(0f, 0.001f * i, 0.001f * i);
+            if (!SingletonBehaviour<TileManager>.Instance.HasTile(p, ScenePortalManager.ActiveSceneIndex) &&
+                (SingletonBehaviour<TileManager>.Instance.IsHoeable(p) || SingletonBehaviour<TileManager>.Instance.IsFarmable(p)))
+            {
+                item.SetActive(true);
+                ToolPatch.MySetSelectionOnTileBody(new ToolPatch.MySetSelectionOnTileBodyArg { _selection = item, transform = hoe.transform }, p);
+                item.transform.localScale = new Vector3(1f, 1.4142135f, 1f);
+                item.gameObject.transform.position += new Vector3(0f, 0.001f * i, 0.001f * i);
+            }
+            else
+            {
+                item.SetActive(false);
+            }
         }
     }
 
