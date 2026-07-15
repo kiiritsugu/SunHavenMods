@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using Wish;
 
-namespace RemoteEarthquakeAndRainCloud;
+namespace EasySpells;
 
 [HarmonyPatch(typeof(Cloud))]
 public static class CloudPatch

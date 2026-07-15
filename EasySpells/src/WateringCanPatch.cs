@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using Wish;
 
-namespace RemoteEarthquakeAndRainCloud;
+namespace EasySpells;
 
 [HarmonyPatch(typeof(WateringCan))]
 public static class WateringCanPatch
@@ -182,7 +182,7 @@ public static class WateringCanPatch
             Plugin.cloudSpell != null)
         {
             if (GameSave.Farming.GetNodeAmount("Farming7a", 3, true) > 0)
-            { 
+            {
                 Plugin.cloudPos = __instance.pos;
                 Plugin.cloudSpell.UseDown1();
             }

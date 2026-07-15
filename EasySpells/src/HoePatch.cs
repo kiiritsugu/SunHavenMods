@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 using UnityEngine;
 using Wish;
 
-namespace RemoteEarthquakeAndRainCloud;
+namespace EasySpells;
 
 [HarmonyPatch(typeof(Hoe))]
 public static class HoePatch
@@ -135,7 +135,7 @@ public static class HoePatch
             int y = i / 5 - 2;
             var item = selectionList[i];
             var p = new Vector2Int(pos.x - x, pos.y - y);
-            
+
             if (!SingletonBehaviour<TileManager>.Instance.HasTile(p, ScenePortalManager.ActiveSceneIndex) &&
                 (SingletonBehaviour<TileManager>.Instance.IsHoeable(p) || SingletonBehaviour<TileManager>.Instance.IsFarmable(p)))
             {

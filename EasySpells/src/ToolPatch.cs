@@ -4,7 +4,7 @@ using System.Reflection.Emit;
 using UnityEngine;
 using Wish;
 
-namespace RemoteEarthquakeAndRainCloud;
+namespace EasySpells;
 
 [HarmonyPatch(typeof(Tool))]
 public static class ToolPatch
@@ -14,9 +14,9 @@ public static class ToolPatch
     {
         var posField = Traverse.Create(__instance).Field<Vector2Int>("pos");
         if (posField == null) return true; // Safety check
-        
+
         Vector2Int pos = posField.Value;
-        
+
         if (__instance is Hoe &&
             Plugin.modEnabled.Value &&
             Plugin.remoteKey.Value.IsPressed() &&
@@ -28,9 +28,9 @@ public static class ToolPatch
                 Plugin.earthqueakePos = pos;
                 // Try to use the earthquake spell
                 Plugin.earthqueakeSpell.UseDown1();
-                
+
                 // Return false to cancel vanilla behavior
-                return false; 
+                return false;
             }
         }
         return true;

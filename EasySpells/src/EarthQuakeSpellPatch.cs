@@ -2,7 +2,7 @@
 using UnityEngine;
 using Wish;
 
-namespace RemoteEarthquakeAndRainCloud;
+namespace EasySpells;
 
 [HarmonyPatch(typeof(EarthquakeSpell))]
 public static class EarthQuakeSpellPatch
