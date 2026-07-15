@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>EasySpells</AssemblyName>
+    <RootNamespace>RemoteEarthquakeAndRainCloud</RootNamespace>
+  </PropertyGroup>
+
+  <Import Project="..\solution.targets" />
+</Project>
