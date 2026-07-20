@@ -9,6 +9,7 @@ using Shared;
 namespace UnifiedTotems;
 
 [HarmonyPatch]
+//Handles aplication of effects for individual crops
 public static class ApplyScarecrowEffectsPatch
 {
   [HarmonyPrefix]
@@ -17,6 +18,7 @@ public static class ApplyScarecrowEffectsPatch
   {
     try
     {
+      //Replaces the vanilla effect application for a new function that acomodates for both unified and vanilla totems
       if (crop != null && crop.data != null && __instance != null)
       {
         TotemHandler.ApplyTotemEffects(__instance, crop);
@@ -31,54 +33,77 @@ public static class ApplyScarecrowEffectsPatch
 }
 
 [HarmonyPatch(typeof(Scarecrow), nameof(Scarecrow.CalculateScarecrowEffectsForNearbyCrops))]
-// This patch replaces the vanilla CalculateScarecrowEffectsForNearbyCrops method with a more accurate and efficient trough a utilitary method
-public static class ScarecrowBoxCastColliderPatch
+// Handles aplication of effects that happen when placing a totem
+public static class TotemPlacementPatch
 {
   [HarmonyPrefix]
-  public static bool Prefix(Scarecrow __instance)
+  public static bool CalculateScarecrowEffectsForNearbyCropsPrefix(Scarecrow __instance)
   {
     if (__instance == null) return false;
 
+    //check if the placed totem is a enhanced one, and apply effects to all crops if so
     if (TotemHandler.CheckIfEnhanced(__instance))
     {
       TotemHandler.ApplyTotemEffectsToAll(__instance);
-      return false;
+    }
+    else
+    {
+      // Use the utility method to perform a box cast and collect all affected crops
+      List<Crop> nearbyCrops = new List<Crop>();
+      ColliderUtils.BoxCastHitsOnTypeAction<Crop>(__instance.RealCenter, UnifiedTotemState.Range, crop =>
+      {
+        nearbyCrops.Add(crop);
+      }, false);
+
+      // Use the frame-safe TotemHandler helper method to process crops
+      TotemHandler.ApplyTotemEffectsToCrops(__instance, nearbyCrops, cropsWithAddedEffects =>
+      {
+        //Debug Mode
+        if (Plugin.DebugMode)
+        {
+          Plugin.logger.LogInfo($"UnifiedTotems: Finished Applying effects to crops. Crops with added effects: {cropsWithAddedEffects}");
+        }
+      });
     }
 
-    // Use the utility method to perform a box cast and apply effects for each unique Scarecrow found
-    ColliderUtils.BoxCastHitsOnTypeAction<Crop>(__instance.RealCenter, UnifiedTotemState.Range, crop =>
-    {
-      __instance.ApplyEffectsToCrop(crop);
-    }, false);
-
-    return false; // Skip the original finicky vanilla calculation entirely
+    return false; // Skip the original vanilla calculation entirely
   }
 }
 
 [HarmonyPatch(typeof(Scarecrow))]
+//Handles patches that happen when removing a totem
 public static class TotemRemovalPatches
 {
   [HarmonyPatch(nameof(Scarecrow.RemoveScarecrowEffectsForNearbyCrops))]
   [HarmonyPrefix]
+  //Handles removing effects for regular totems
   public static bool RemoveScarecrowEffectsForNearbyCropsPrefix(Scarecrow __instance)
   {
     if (__instance == null) return false;
 
-    // Use the utility method to perform a box cast and do remove effects evaluation for each unique crop found
+    // Use the utility method to perform a box cast and collect all affected crops
+    List<Crop> affectedCrops = new List<Crop>();
     ColliderUtils.BoxCastHitsOnTypeAction<Crop>(__instance.RealCenter, __instance.range, crop =>
     {
-      TotemHandler.EvaluateAndRemoveEffects(__instance, crop);
+      affectedCrops.Add(crop);
     });
 
-    //Remove later
-    // Plugin.logger.LogInfo($"UnifiedTotems: Finished removing effects for nearby crops. Crops with removed effects: {TotemHandler.cropsWithRemovedEffects}");
-    TotemHandler.cropsWithRemovedEffects = 0; // Reset the counter
+    // Use the frame-safe TotemHandler helper method to process crops
+    TotemHandler.RemoveTotemEffectsFromCrops(__instance, affectedCrops, cropsWithRemovedEffects =>
+    {
+      //Debug Mode
+      if (Plugin.DebugMode)
+      {
+        Plugin.logger.LogInfo($"UnifiedTotems: Finished removing effects for nearby crops. Crops with removed effects: {cropsWithRemovedEffects}");
+      }
+    });
 
     return false; // Skip vanilla finicky logic entirely
   }
 
   [HarmonyPatch(nameof(Scarecrow.OnDestroyed))]
   [HarmonyPrefix]
+  //handles removing effects for enhanced totems
   public static bool RemoveScarecrowEffectFromAll(Scarecrow __instance)
   {
     UnifiedTotem unifiedTotem = __instance.GetComponent<UnifiedTotem>();
@@ -87,15 +112,16 @@ public static class TotemRemovalPatches
     if (unifiedTotem.initialized != true) unifiedTotem.InitializeTotem();
     if (!unifiedTotem.gloriteEnhanced) return true;
 
-    Plugin.logger.LogInfo($"Enhanced totem was removed: {__instance.name}");
     CallDecorationOnDestroyed(__instance);
     TotemHandler.EvaluateEnhancedTotemsInScene(unifiedTotem);
     TotemHandler.RemoveTotemEffectsFromAll(__instance);
+
     return false;
   }
 
   [HarmonyPatch(typeof(Decoration), "OnDestroyed")]
   [HarmonyReversePatch]
+  //helper for scarecrow OnDestroyed, to call the base method
   public static void CallDecorationOnDestroyed(object instance)
   {
     throw new NotImplementedException("[UnifiedTotems] Reverse OnDestroyed patch failed!");
@@ -103,6 +129,7 @@ public static class TotemRemovalPatches
 }
 
 [HarmonyPatch]
+//Handles managing state of Active Enhanced Totems on totem placement
 public static class EnhancedTotemPlacedPatch
 {
   [HarmonyPostfix]

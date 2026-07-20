@@ -22,7 +22,9 @@ public static class ItemHandler
         foreach (KeyValuePair<int, ScareCrowEffect[]> pair in TotemIndex.TotemDictionary)
         {
             Database.GetData<ItemData>(pair.Key, ConfigureAsScarecrow);
-            DebugCheckTotemInDatabase(pair.Key);
+
+            //Debug Mode
+            if(Plugin.DebugMode)DebugCheckTotemInDatabase(pair.Key);
         }
 
         UnifiedTotemState.IsConfigured = true;
@@ -169,6 +171,7 @@ public static class ItemHandler
                 return;
             }
 
+            //Debug Mode
             Plugin.logger.LogInfo($"[UnifiedTotems] Item {itemData.name} id {itemData.id} was sucessfully configured as a unified totem");
         });
     }

@@ -18,9 +18,10 @@ public class Plugin : BaseUnityPlugin
 {
     private Harmony harmony = new Harmony(PLUGIN_GUID);
     public static ManualLogSource logger;
+    public static bool DebugMode = true;
     public const string PLUGIN_GUID = "com.kiiritsugu.sunhaven.unifiedtotems";
     public const string PLUGIN_NAME = "Unified Totems";
-    public const string PLUGIN_VERSION = "1.0.0";
+    public const string PLUGIN_VERSION = "1.1.0";
 
     public static Plugin Instance { get; private set; }
 
@@ -31,6 +32,7 @@ public class Plugin : BaseUnityPlugin
         Logger.LogInfo($"Plugin {PLUGIN_GUID} is active.");
 
         Instance = this;
+        CoroutineRunner.SetHost(this);
     }
 
     [HarmonyPatch]
@@ -57,7 +59,7 @@ public class Plugin : BaseUnityPlugin
         }
 
         private static bool _isonFinishLoadingDecorationsSubscribed = false;
-
+        //subscribes to event to evaluate enhanced totems in scene after decorations are finished loading
         [HarmonyPostfix]
         [HarmonyPatch(typeof(ScenePortalManager), "Awake")]
         public static void CheckEnhancedTotems()

@@ -8,25 +8,27 @@ using Shared;
 namespace UnifiedTotems;
 
 [HarmonyPatch(typeof(Crop))]
+// handles scarecrow effects on crop placement
 public static class CropPatch
 {
-  // This patch replaces the vanilla GetNearbyScarecrowEffects method with a more accurate and efficient trough a utilitary method
   [HarmonyPrefix]
   [HarmonyPatch("GetNearbyScarecrowEffects")]
+  //handles applying totem effects
   static bool GetNearbyScarecrowEffectsPrefix(Crop __instance)
   {
     if (__instance == null) return false;
 
     try
     {
-      //Apply effects from enhanced totems
+      //applies active enhanced totem effects in the farm
       TotemHandler.ApplyActiveEnhancedTotemEffects(__instance);
 
       // Use the utility method to perform a box cast and apply effects for each unique Scarecrow found
       ColliderUtils.BoxCastHitsOnTypeAction<Scarecrow>(__instance.RealCenter, UnifiedTotemState.Range, scarecrow =>
       {
-        scarecrow.ApplyEffectsToCrop(__instance);
+        TotemHandler.ApplyTotemEffects(scarecrow, __instance);
       }, false);
+
     }
     catch (Exception err)
     {
@@ -37,9 +39,9 @@ public static class CropPatch
     return false;
   }
 
-  //
   [HarmonyPrefix]
   [HarmonyPatch("CanBePlacedBecauseScarecrowNearby")]
+  // handles allowing crop placement by regional totems
   static bool CanBePlacedBecauseScarecrowNearbyPrefix(
     Crop __instance, ref bool __result, Vector2 position, Vector3Int placementPosition
   )

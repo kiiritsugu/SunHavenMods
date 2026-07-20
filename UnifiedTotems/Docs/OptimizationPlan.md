@@ -29,7 +29,11 @@ graph TD
 *   Ensure `EvaluateEnhancedTotemsInScene` is only triggered via a throttled event (e.g., a simple debounce) when placing/removing totems to prevent re-evaluating the whole scene multiple times in a single frame.
 
 ## Action Plan
-- [ ] Refactor `ApplyTotemEffectsToAll` and `RemoveTotemEffectsFromAll` to return a `System.Collections.IEnumerator`.
-- [ ] Utilize `CoroutineRunner.instance.StartCoroutine` to execute the update.
-- [ ] Implement batch chunking (process X items per frame).
-- [ ] Consolidate metadata saving to be more efficient.
+- [x] Refactor `ApplyTotemEffectsToAll` and `RemoveTotemEffectsFromAll` to return a `System.Collections.IEnumerator`.
+- [x] Utilize `CoroutineRunner.instance.StartCoroutine` to execute the update.
+- [x] Implement batch chunking (process X items per frame).
+- [x] Consolidate metadata saving to be more efficient.
+
+# Future Performance Improvements
+- [x] Refactor `GetNearbyScarecrowEffectsPrefix` to avoid redundant `SaveMeta()`/`SendNewMeta()` calls by caching effects or using a lazy evaluation/dirty-flag system.
+- [x] Reduce the frequency of `SaveMeta()`/`SendNewMeta()` in `TotemHandler` by batching changes per frame instead of per-application.

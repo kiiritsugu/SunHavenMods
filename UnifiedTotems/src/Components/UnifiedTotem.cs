@@ -58,12 +58,12 @@ public class UnifiedTotem : MonoBehaviour
         }
         else
         {
-          Plugin.logger.LogWarning($"UnifiedTotem OnEnable: No combined effects found for {decoration.name} (sourceId: {totemID}).");
+          if(Plugin.DebugMode) Plugin.logger.LogWarning($"UnifiedTotem OnEnable: No combined effects found for {decoration.name} (sourceId: {totemID}).");
         }
       }
       else
       {
-        Plugin.logger.LogWarning("UnifiedTotem OnEnable: Failed to find Decoration component. Cannot initialize combined effects.");
+        if(Plugin.DebugMode) Plugin.logger.LogWarning("UnifiedTotem OnEnable: Failed to find Decoration component. Cannot initialize combined effects.");
       }
     }
   }
