@@ -17,19 +17,34 @@ public static class ToolPatch
 
         Vector2Int pos = posField.Value;
 
-        if (__instance is Hoe &&
-            Plugin.modEnabled.Value &&
-            Plugin.remoteKey.Value.IsPressed() &&
-            Plugin.earthqueakeSpell != null)
+        if (Plugin.modEnabled.Value && Plugin.remoteKey.Value.IsPressed())
         {
             // Verify if the player has the required spell level
-            if (GameSave.Farming.GetNodeAmount("Farming5a", 3, true) > 0)
+            if (__instance is Hoe &&
+                Plugin.earthqueakeSpell != null &&
+                GameSave.Farming.GetNodeAmount("Farming5a", 3, true) > 0)
             {
                 Plugin.earthqueakePos = pos;
                 // Try to use the earthquake spell
                 Plugin.earthqueakeSpell.UseDown1();
 
                 // Return false to cancel vanilla behavior
+                return false;
+            }
+
+            else if (__instance is Pickaxe &&
+                Plugin.arcaneExplosionSpell != null &&
+                GameSave.Mining.GetNodeAmount("Mining4a", 5, true) > 0)
+            {
+                Plugin.arcaneExplosionSpell.UseDown1();
+                return false;
+            }
+
+            else if (__instance is Axe &&
+                Plugin.woodcuttingSpell != null &&
+                GameSave.Exploration.GetNodeAmount("Exploration5b", 3, true) > 0)
+            {
+                Plugin.woodcuttingSpell.UseDown1();
                 return false;
             }
         }

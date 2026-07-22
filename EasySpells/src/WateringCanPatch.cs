@@ -100,7 +100,7 @@ public static class WateringCanPatch
             selectionList?.ForEach(x => UnityEngine.Object.Destroy(x));
             selectionList?.Clear();
             selectionList = new List<GameObject>();
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 65; i++)
             {
                 var item = UnityEngine.Object.Instantiate<GameObject>(_selection);
                 item.SetActive(false);
@@ -134,7 +134,8 @@ public static class WateringCanPatch
                     break;
             }
             var item = selectionList[i];
-            var p = new Vector2Int(pos.x + x, pos.y + y);
+            Vector2Int position = pos;
+            var p = new Vector2Int(position.x + x, position.y + y);
             ToolPatch.MySetSelectionOnTileBody(new ToolPatch.MySetSelectionOnTileBodyArg { _selection = item, transform = can.transform }, p);
             item.transform.localScale = new Vector3(1f, 1.4142135f, 1f);
             item.gameObject.transform.position += new Vector3(0f, 0.0001f * i, 0.0001f * i);

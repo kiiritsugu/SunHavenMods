@@ -2,6 +2,7 @@
   <PropertyGroup>
     <AssemblyName>EasySpells</AssemblyName>
     <RootNamespace>EasySpells</RootNamespace>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <Import Project="..\solution.targets" />

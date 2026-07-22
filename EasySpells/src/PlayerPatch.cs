@@ -19,6 +19,8 @@ public static class PlayerPatch
         {
             loadUseItem(306, __instance, ____spell1Transform, (useItem) => Plugin.earthqueakeSpell = useItem as EarthquakeSpell);
             loadUseItem(303, __instance, ____spell1Transform, (useItem) => Plugin.cloudSpell = useItem as CloudSpell);
+            loadUseItem(302, __instance, ____spell1Transform, (useItem) => Plugin.arcaneExplosionSpell = useItem as ArcaneExplosionSpell);
+            loadUseItem(308, __instance, ____spell1Transform, (useItem) => Plugin.woodcuttingSpell = useItem as WoodcuttingSpell);
         }
     }
     private static void loadUseItem(int item, Player __instance, Transform ____spell1Transform, Action<UseItem> onLoaded)
